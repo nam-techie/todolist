@@ -4,9 +4,7 @@ import { Task } from '../types/Task';
 
 interface CalendarViewProps {
   tasks: Task[];
-  onToggleComplete: (taskId: string) => void;
   onEditTask: (task: Task) => void;
-  onDeleteTask: (taskId: string) => void;
 }
 
 const monthNames = [
