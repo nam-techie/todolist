@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Square, Settings, Timer, Coffee } from 'lucide-react';
+import { Play, Pause, Square, Settings, Timer, Coffee, Trees, Award } from 'lucide-react';
+import { focusForestService, ForestStats } from '../services/focusForestService';
+import ForestVisualization from './ForestVisualization';
 
 interface FocusTimerProps {
   isOpen: boolean;
@@ -18,7 +20,10 @@ function FocusTimer({ isOpen, onClose }: FocusTimerProps) {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [selectedDuration, setSelectedDuration] = useState(25);
   const [showSettings, setShowSettings] = useState(false);
+  const [showForest, setShowForest] = useState(false);
   const [sessions, setSessions] = useState(0);
+  const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
+  const [forestStats, setForestStats] = useState<ForestStats>(focusForestService.getStats());
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -60,8 +65,21 @@ function FocusTimer({ isOpen, onClose }: FocusTimerProps) {
       audioRef.current.play().catch(() => {});
     }
 
-    if (mode === 'focus') {
+    if (mode === 'focus' && sessionStartTime) {
+      // Save completed focus session to forest
+      const sessionData = {
+        startTime: sessionStartTime,
+        endTime: new Date(),
+        duration: selectedDuration,
+        completed: true,
+        date: new Date().toISOString().split('T')[0]
+      };
+      
+      focusForestService.saveSession(sessionData);
+      setForestStats(focusForestService.getStats());
       setSessions(prev => prev + 1);
+      setSessionStartTime(null);
+      
       setMode('break');
       setTimeLeft(5 * 60); // 5 minute break
       setSelectedDuration(5);
@@ -73,9 +91,9 @@ function FocusTimer({ isOpen, onClose }: FocusTimerProps) {
     // Show browser notification
     if (Notification.permission === 'granted') {
       new Notification(
-        mode === 'focus' ? 'Focus session complete!' : 'Break time over!',
+        mode === 'focus' ? '🌳 Focus session complete! Tree planted!' : 'Break time over!',
         {
-          body: mode === 'focus' ? 'Time for a break!' : 'Ready for another focus session?',
+          body: mode === 'focus' ? 'Time for a break! Your forest is growing!' : 'Ready for another focus session?',
           icon: '/vite.svg'
         }
       );
@@ -87,6 +105,11 @@ function FocusTimer({ isOpen, onClose }: FocusTimerProps) {
       Notification.requestPermission();
     }
     setStatus('running');
+    
+    // Record session start time for focus mode
+    if (mode === 'focus') {
+      setSessionStartTime(new Date());
+    }
   };
 
   const pauseTimer = () => {
@@ -96,6 +119,7 @@ function FocusTimer({ isOpen, onClose }: FocusTimerProps) {
   const stopTimer = () => {
     setStatus('idle');
     setTimeLeft(selectedDuration * 60);
+    setSessionStartTime(null); // Reset session start time
   };
 
   const resetTimer = (duration: number) => {
@@ -157,6 +181,45 @@ function FocusTimer({ isOpen, onClose }: FocusTimerProps) {
               </div>
               <button
                 onClick={() => setShowSettings(false)}
+                className="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Back to Timer
+              </button>
+            </div>
+          ) : showForest ? (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium text-white mb-4 flex items-center space-x-2">
+                  <Trees className="w-5 h-5 text-green-400" />
+                  <span>Your Forest</span>
+                </h3>
+                <ForestVisualization trees={focusForestService.getTrees()} />
+              </div>
+              
+              {/* Forest Stats */}
+              <div className="bg-gray-700 rounded-lg p-4">
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-green-400">{forestStats.treesPlanted}</div>
+                    <div className="text-sm text-gray-400">Trees Planted</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-blue-400">{forestStats.currentStreak}</div>
+                    <div className="text-sm text-gray-400">Day Streak</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-yellow-400">{forestStats.forestLevel}</div>
+                    <div className="text-sm text-gray-400">Forest Level</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-purple-400">{Math.floor(forestStats.totalMinutes / 60)}h</div>
+                    <div className="text-sm text-gray-400">Total Focus</div>
+                  </div>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setShowForest(false)}
                 className="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Back to Timer
@@ -253,18 +316,31 @@ function FocusTimer({ isOpen, onClose }: FocusTimerProps) {
                 >
                   <Settings className="w-6 h-6" />
                 </button>
+                <button
+                  onClick={() => setShowForest(true)}
+                  className="bg-green-600 hover:bg-green-500 text-white p-4 rounded-full transition-colors"
+                >
+                  <Trees className="w-6 h-6" />
+                </button>
               </div>
 
               {/* Stats */}
               <div className="bg-gray-700 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white">{sessions}</div>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-white">{focusForestService.getTodayStats().sessions}</div>
                     <div className="text-sm text-gray-400">Sessions Today</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white">{sessions * selectedDuration}</div>
+                  <div>
+                    <div className="text-2xl font-bold text-white">{focusForestService.getTodayStats().minutes}</div>
                     <div className="text-sm text-gray-400">Minutes Focused</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-green-400">{focusForestService.getTodayStats().trees}</div>
+                    <div className="text-sm text-gray-400 flex items-center justify-center space-x-1">
+                      <Trees className="w-3 h-3" />
+                      <span>Trees</span>
+                    </div>
                   </div>
                 </div>
               </div>

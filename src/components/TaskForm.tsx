@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, Flag, Tag, MapPin } from 'lucide-react';
 import { Task, Priority, TaskStatus, Workspace } from '../types/Task';
+import { useLanguage } from '../contexts/LanguageContext';
+import CustomDatePicker from './CustomDatePicker';
+import { 
+  XMarkIcon,
+  CalendarIcon,
+  ClockIcon,
+  FlagIcon,
+  TagIcon,
+  MapPinIcon
+} from '@heroicons/react/24/outline';
 
 interface TaskFormProps {
   task?: Task | null;
@@ -17,6 +26,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
   onSubmit, 
   onClose 
 }) => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -55,7 +65,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
     
     const taskData = {
       ...formData,
-      dueDate: formData.dueDate ? new Date(formData.dueDate).toISOString() : undefined,
+      dueDate: formData.dueDate ? new Date(formData.dueDate) : undefined,
       tags: formData.tags.filter(tag => tag.trim() !== '')
     };
 
@@ -86,7 +96,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
     }
   };
 
-  const priorityColors = {
+  const priorityColors: Record<Priority, string> = {
     low: 'bg-blue-500',
     medium: 'bg-yellow-500',
     high: 'bg-red-500'
@@ -97,13 +107,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
       <div className="bg-gray-900 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">
-            {task ? 'Edit Task' : 'Create New Task'}
+            {task ? t('editTask') : t('createNewTask')}
           </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <XMarkIcon className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
@@ -111,14 +121,14 @@ const TaskForm: React.FC<TaskFormProps> = ({
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Task Title *
+              {t('taskTitle')} *
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              placeholder="Enter task title..."
+              placeholder={t('taskTitlePlaceholder')}
               required
             />
           </div>
@@ -126,48 +136,48 @@ const TaskForm: React.FC<TaskFormProps> = ({
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Description
+              {t('description')}
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={3}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
-              placeholder="Add task description..."
+              placeholder={t('descriptionPlaceholder')}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Priority */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                <Flag className="w-4 h-4 inline mr-2" />
-                Priority
+              <label className="flex items-center text-sm font-medium text-gray-300 mb-2">
+                <FlagIcon className="w-4 h-4 mr-2" />
+                {t('priority')}
               </label>
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as Priority }))}
                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
-                <option value="low">Low Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="high">High Priority</option>
+                <option value="low">{t('lowPriority')}</option>
+                <option value="medium">{t('mediumPriority')}</option>
+                <option value="high">{t('highPriority')}</option>
               </select>
             </div>
 
             {/* Status */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Status
+                {t('status')}
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as TaskStatus }))}
                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
-                <option value="pending">Pending</option>
-                <option value="in-progress">In Progress</option>
-                <option value="completed">Completed</option>
+                <option value="pending">{t('pending')}</option>
+                <option value="in-progress">{t('inProgress')}</option>
+                <option value="completed">{t('completed')}</option>
               </select>
             </div>
           </div>
@@ -175,23 +185,22 @@ const TaskForm: React.FC<TaskFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Due Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                <Calendar className="w-4 h-4 inline mr-2" />
-                Due Date
+              <label className="flex items-center text-sm font-medium text-gray-300 mb-2">
+                <CalendarIcon className="w-4 h-4 mr-2" />
+                {t('dueDate')}
               </label>
-              <input
-                type="datetime-local"
+              <CustomDatePicker
                 value={formData.dueDate}
-                onChange={(e) => setFormData(prev => ({ ...prev, dueDate: e.target.value }))}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                onChange={(value) => setFormData(prev => ({ ...prev, dueDate: value }))}
+                placeholder={t('selectDueDate')}
               />
             </div>
 
             {/* Estimated Time */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                <Clock className="w-4 h-4 inline mr-2" />
-                Estimated Time (minutes)
+              <label className="flex items-center text-sm font-medium text-gray-300 mb-2">
+                <ClockIcon className="w-4 h-4 mr-2" />
+                {t('estimatedTime')}
               </label>
               <input
                 type="number"
@@ -207,9 +216,9 @@ const TaskForm: React.FC<TaskFormProps> = ({
 
           {/* Workspace */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              <MapPin className="w-4 h-4 inline mr-2" />
-              Workspace
+            <label className="flex items-center text-sm font-medium text-gray-300 mb-2">
+              <MapPinIcon className="w-4 h-4 mr-2" />
+              {t('workspace')}
             </label>
             <select
               value={formData.workspaceId}
@@ -226,9 +235,9 @@ const TaskForm: React.FC<TaskFormProps> = ({
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              <Tag className="w-4 h-4 inline mr-2" />
-              Tags
+            <label className="flex items-center text-sm font-medium text-gray-300 mb-2">
+              <TagIcon className="w-4 h-4 mr-2" />
+              {t('tags')}
             </label>
             <div className="flex gap-2 mb-3">
               <input
@@ -237,14 +246,14 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Add a tag..."
+                placeholder={t('addTagPlaceholder')}
               />
               <button
                 type="button"
                 onClick={addTag}
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
               >
-                Add
+{t('add')}
               </button>
             </div>
             
@@ -261,7 +270,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
                       onClick={() => removeTag(tag)}
                       className="hover:text-red-400 transition-colors"
                     >
-                      <X className="w-3 h-3" />
+                      <XMarkIcon className="w-3 h-3" />
                     </button>
                   </span>
                 ))}
@@ -282,13 +291,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
               onClick={onClose}
               className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
             >
-              Cancel
+{t('cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
             >
-              {task ? 'Update Task' : 'Create Task'}
+{task ? t('updateTask') : t('createTask')}
             </button>
           </div>
         </form>

@@ -1,149 +1,148 @@
-# 📝 TaskFlow - Modern TodoList Application
+# TaskFlow - Student Time Management Solution
 
-## 🌟 Tổng quan
+## 🎯 Overview
 
-TaskFlow là một ứng dụng quản lý công việc hiện đại với giao diện tối, được thiết kế để giúp bạn tổ chức và theo dõi các nhiệm vụ một cách hiệu quả. Ứng dụng lấy cảm hứng từ các công cụ productivity hàng đầu và tích hợp nhiều tính năng mạnh mẽ.
+TaskFlow is a comprehensive digital solution designed specifically for Vietnamese university students to better manage their time and navigate the chaos of student life. Built for the NAVER Vietnam AI Hackathon 2024.
 
-## ✨ Tính năng chính
+**Live Demo:** [Coming Soon - Will be deployed before September 15th]
 
-### 1. 📋 Quản lý Task đầy đủ (CRUD)
-- **Tạo task**: Thêm task mới với đầy đủ thông tin
-- **Chỉnh sửa**: Cập nhật thông tin task bất kỳ lúc nào
-- **Xóa task**: Loại bỏ task không cần thiết
-- **Đánh dấu hoàn thành**: Toggle trạng thái completed/pending
+## 🚀 Features
 
-### 2. 💾 Lưu trữ dữ liệu
-- **Local Storage**: Dữ liệu được lưu trực tiếp trên trình duyệt
-- **Persistent**: Dữ liệu không bị mất khi reload trang
-- **Auto-save**: Tự động lưu mọi thay đổi
+### ✅ Core Requirements Met
 
-### 3. 🎯 3 Giao diện xem khác nhau
+1. **Full CRUD Operations** - Complete Create, Read, Update, Delete for Tasks and Workspaces
+2. **Persistent Storage** - LocalStorage with offline capabilities and sync queue
+3. **3+ Different Views** - List View, Calendar View, Analytics View with rich data visualization
+4. **Time/Date Handling** - Custom date picker, due dates, time tracking, calendar integration
+5. **20+ Items Support** - Advanced search, filtering, sorting, virtual scrolling ready
 
-#### 📋 List View
-- **Tìm kiếm**: Search theo title, description, tags
-- **Lọc nâng cao**: Filter theo status, priority, tags, overdue
-- **Sắp xếp**: Sort theo deadline, priority, created date
-- **Hiển thị chi tiết**: Thông tin đầy đủ về từng task
+### 🌟 Advanced Features
 
-#### 📅 Calendar View  
-- **Lịch tháng/tuần**: Xem task theo định dạng calendar
-- **Click ngày**: Chọn ngày để xem tasks due trong ngày đó
-- **Visual timeline**: Nhìn thấy distribution của tasks theo thời gian
-- **Due date highlighting**: Màu sắc phân biệt độ ưu tiên thời gian
+#### 🎯 Task Management
+- **Smart Task Creation** with custom date picker
+- **Priority Levels** (Low, Medium, High) with visual indicators
+- **Status Tracking** (Pending, In Progress, Completed)
+- **Tags System** for better organization
+- **Estimated Time** vs **Actual Time Tracking**
+- **Recurring Tasks** (Daily, Weekly, Monthly, Yearly patterns)
 
-#### 📊 Analytics View
-- **Tổng số tasks**: Thống kê tổng quan
-- **Tỷ lệ hoàn thành**: Phần trăm completion rate  
-- **Phân bố theo priority**: Charts hiển thị distribution
-- **Tasks hoàn thành theo ngày/tuần**: Timeline charts
-- **Progress tracking**: Theo dõi tiến độ theo thời gian
+#### 📱 User Experience
+- **Responsive Design** - Optimized for both desktop and mobile
+- **Internationalization** - Full Vietnamese and English support
+- **Professional UI** - Clean design with Heroicons library
+- **Keyboard Shortcuts** - Power user features (Ctrl+N, Ctrl+K, etc.)
+- **Dark Theme** - Optimized for long study sessions
 
-### 4. ⏰ Xử lý thời gian/ngày giờ
+#### 📊 Analytics & Productivity
+- **Time Tracking** - Start/pause/stop timers for tasks
+- **Productivity Charts** - Daily activity, weekly efficiency
+- **Progress Analytics** - Completion rates, time analysis
+- **Smart Insights** - Estimation accuracy, productivity patterns
 
-#### Due Date Management
-- **Trường dueAt, createdAt, updatedAt**: Timestamp đầy đủ
-- **estimatedMinutes**: Ước tính thời gian hoàn thành
+#### 🔔 Smart Notifications
+- **Priority-Based Alerts** - Different notification schedules based on task priority
+- **Browser Notifications** - System-level alerts with permission handling
+- **Deadline Warnings** - Smart reminders (24h, 12h, 6h, 2h, 1h, 30min for high priority)
+- **Completion Celebrations** - Positive reinforcement for task completion
 
-#### Overdue Highlighting  
-- **🔴 Đỏ**: Overdue hoặc còn ≤ 1 ngày
-- **🟡 Vàng**: Còn ≤ 3 ngày  
-- **🟢 Xanh lá**: Còn ≤ 7 ngày
-- **🔵 Xanh dương**: Còn > 7 ngày
+#### 💾 Data Management
+- **Import/Export** - JSON backup and CSV export functionality
+- **Offline Mode** - Full offline functionality with sync when online
+- **PWA Support** - Installable as mobile/desktop app
+- **Error Recovery** - Graceful error handling with recovery options
 
-#### Time Display
-- **Countdown**: "Due in 3 hours", "Due in 2 days"
-- **Sort theo deadline**: Sắp xếp theo thời gian còn lại
-- **Filter theo khoảng thời gian**: Today, This week, etc.
+#### 🏢 Workspace Management
+- **Multiple Workspaces** - Organize tasks by context (Personal, Study, Work, etc.)
+- **Workspace Analytics** - Per-workspace statistics and insights
+- **Quick Stats** - Real-time task counts and completion rates
 
-### 5. 🚀 Hiệu suất với 20+ items
-- **Tìm kiếm hiệu quả**: Search algorithm tối ưu
-- **Filter nhanh**: Multiple filter criteria
-- **Virtual scrolling**: (Tùy chọn) Pagination hoặc virtual list
-- **Lazy loading**: Load dữ liệu theo demand
-- **Debounced search**: Tránh lag khi typing
+## 🛠 Technical Stack
 
-### 6. 🎨 Trải nghiệm người dùng tốt
+- **Frontend:** React 18 + TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS
+- **Icons:** Heroicons
+- **Storage:** LocalStorage + IndexedDB ready
+- **PWA:** Service Worker + Web App Manifest
+- **State Management:** React Context + Custom Hooks
 
-#### Form Validation
-- **Thêm/sửa có validate**: Required fields, format checking
-- **Error handling**: Thông báo lỗi rõ ràng
-- **Success feedback**: Confirmation khi thành công
+## 🏗 Architecture
 
-#### Confirm khi xóa
-- **Modal confirmation**: Xác nhận trước khi delete
-- **Undo option**: Có thể hoàn tác trong một số trường hợp
+```
+src/
+├── components/          # React components
+│   ├── Header.tsx      # Navigation header
+│   ├── Sidebar.tsx     # Navigation sidebar
+│   ├── ListView.tsx    # Task list with search/filter
+│   ├── CalendarView.tsx # Calendar interface
+│   ├── AnalyticsView.tsx # Charts and statistics
+│   ├── TaskForm.tsx    # Task creation/editing
+│   ├── TimeTracker.tsx # Time tracking component
+│   └── ...
+├── contexts/           # React contexts
+│   ├── LanguageContext.tsx # i18n management
+│   ├── ThemeContext.tsx    # Theme management
+│   └── UIContext.tsx       # UI state management
+├── hooks/              # Custom React hooks
+│   ├── useTaskManager.ts   # Task CRUD operations
+│   ├── useNotifications.ts # Notification system
+│   ├── useKeyboardShortcuts.ts # Keyboard shortcuts
+│   └── useOfflineSync.ts   # Offline sync management
+├── services/           # Business logic
+│   ├── taskService.ts  # Task operations
+│   ├── workspaceService.ts # Workspace operations
+│   ├── recurringTaskService.ts # Recurring tasks
+│   └── smartNotificationService.ts # Smart notifications
+├── types/              # TypeScript definitions
+│   └── Task.ts         # Core data types
+└── utils/              # Utility functions
+    ├── importExport.ts # Data import/export
+    └── offlineStorage.ts # Offline storage
+```
 
-#### Empty States
-- **Không có task**: Hiển thị message và CTA phù hợp
-- **No search results**: Gợi ý cách tìm kiếm khác
-- **Empty workspace**: Hướng dẫn tạo task đầu tiên
+## 🎮 Usage
 
-#### Responsive Design
-- **Mobile-first**: Tối ưu cho mobile
-- **Keyboard shortcuts**: Hỗ trợ navigation bằng phím
-- **Focus states**: Accessibility tốt
-- **Touch-friendly**: Buttons và interactions phù hợp touch
+### Keyboard Shortcuts
+- `Ctrl/Cmd + N` - Create new task
+- `Ctrl/Cmd + K` - Focus search
+- `Ctrl/Cmd + L` - Toggle language
+- `1/2/3` - Switch between views
+- `?` - Show keyboard shortcuts help
 
-## 🏢 Tính năng nâng cao
+### Task Management
+1. **Create Tasks** - Click "Add Task" or use Ctrl+N
+2. **Set Priorities** - Low/Medium/High with visual indicators
+3. **Track Time** - Click play button on any task to start tracking
+4. **Set Recurring** - Configure daily/weekly/monthly patterns
+5. **Organize** - Use workspaces and tags for better organization
 
-### 📁 Workspace Management
-- **Tạo workspace**: Gym, Work, Study, Personal, etc.
-- **Custom icons**: 16 icons để chọn (💪, 💼, 📚, 🎯, etc.)
-- **Custom colors**: 8 màu chủ đạo
-- **Workspace switching**: Chuyển đổi nhanh giữa các workspace
-- **Isolated tasks**: Mỗi workspace có tasks riêng biệt
+### Analytics
+- **Daily Activity** - See task creation and completion patterns
+- **Weekly Efficiency** - Track productivity over time
+- **Time Analysis** - Compare estimated vs actual time spent
+- **Progress Tracking** - Visual progress indicators and completion rates
 
-### ⏱️ Focus Timer (Pomodoro)
-- **Multiple durations**: 25, 45, 60, 90, 120 phút
-- **Visual countdown**: Circular progress bar
-- **Auto break**: Tự động chuyển sang break time (5-15 phút)
-- **Session tracking**: Đếm số sessions đã hoàn thành
-- **Notifications**: Browser notifications khi hết giờ
-- **Background audio**: Notification sound
-- **Play/Pause/Stop**: Full control
+## 📱 PWA Features
 
-### 🏷️ Task Properties
-- **Priority levels**: Low, Medium, High, Urgent
-- **Status tracking**: Pending, In Progress, Completed
-- **Tags system**: Multiple tags per task
-- **Description**: Rich text description
-- **Time estimation**: Estimated minutes to complete
+TaskFlow works as a Progressive Web App:
+- **Installable** - Add to home screen on mobile/desktop
+- **Offline Support** - Full functionality without internet
+- **Background Sync** - Sync changes when connection returns
+- **Push Notifications** - System-level task reminders
 
-## 🎨 Thiết kế UI/UX
+## 🌍 Internationalization
 
-### 🌙 Dark Theme
-- **Primary colors**: Dark grays (#0a0a0a, #1a1a1a, #2a2a2a)
-- **Accent color**: Green (#22c55e) - có thể thay đổi theo workspace
-- **Text colors**: White/gray hierarchy cho readability
-- **Consistent spacing**: 8px grid system
+Full support for Vietnamese university students:
+- **Vietnamese Interface** - Complete Vietnamese translation
+- **English Support** - Switch between VI/EN instantly
+- **Cultural Context** - Designed for Vietnamese academic calendar and workflow
 
-### 🎭 Visual Design
-- **Modern cards**: Subtle shadows, rounded corners
-- **Smooth animations**: Transitions và micro-interactions
-- **Color coding**: Priority và status có màu riêng biệt
-- **Typography**: Clear hierarchy với multiple font weights
-- **Icons**: Lucide React icons set
-
-### 📱 Responsive Layout
-- **Mobile sidebar**: Collapsible navigation
-- **Adaptive grid**: Responsive columns
-- **Touch optimization**: Button sizes và spacing
-- **Keyboard navigation**: Full keyboard support
-
-## 🛠️ Công nghệ sử dụng
-
-- **Frontend**: React 18 + TypeScript
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Build tool**: Vite
-- **Storage**: Browser localStorage
-- **State management**: React hooks (useState, useEffect, useMemo)
-
-## 🚀 Cài đặt và chạy
+## 🔧 Installation & Development
 
 ```bash
-# Clone repository
+# Clone the repository
 git clone [repository-url]
+cd todolist
 
 # Install dependencies
 npm install
@@ -153,51 +152,52 @@ npm run dev
 
 # Build for production
 npm run build
+
+# Preview production build
+npm run preview
 ```
 
-## 📖 Hướng dẫn sử dụng
+## 📋 Core Technical Requirements ✅
 
-### Tạo Task mới
-1. Click nút "Add Task" ở header
-2. Điền thông tin: title, description, priority, due date
-3. Chọn workspace và thêm tags nếu cần
-4. Click "Create Task"
+1. ✅ **CRUD Operations**: Full Create, Read, Update, Delete for Tasks and Workspaces
+2. ✅ **Persistent Storage**: LocalStorage with offline sync capabilities
+3. ✅ **3 Different Views**: List, Calendar, Analytics with rich data visualization
+4. ✅ **Time/Date Handling**: Custom date picker, time tracking, calendar integration
+5. ✅ **20+ Items Support**: Advanced search, filtering, sorting, performance optimized
 
-### Quản lý Workspace
-1. Click icon Settings ở sidebar
-2. Tạo workspace mới với tên, icon và màu
-3. Switch giữa các workspace bằng sidebar
-4. Mỗi workspace sẽ có tasks riêng biệt
+## 🎨 Design Philosophy
 
-### Sử dụng Focus Timer
-1. Click "Focus Timer" ở header
-2. Chọn thời gian focus (25-120 phút)
-3. Click Play để bắt đầu
-4. Nghỉ giải lao khi timer kết thúc
-5. Theo dõi số sessions đã hoàn thành
+**Student-Centric Design:**
+- Clean, distraction-free interface for focus
+- Quick task creation for busy schedules
+- Visual progress tracking for motivation
+- Offline support for unreliable campus wifi
 
-### Xem Analytics
-1. Chuyển sang Analytics view
-2. Xem tổng quan về productivity
-3. Theo dõi completion rate
-4. Phân tích distribution theo priority
-5. Xem progress theo thời gian
+**Vietnamese Student Needs:**
+- Bilingual interface (Vietnamese/English)
+- Academic workflow optimization
+- Group project coordination ready
+- Time management for multiple commitments
 
-## 🔮 Tính năng tương lai
+## 🔮 Future Enhancements
 
-- [ ] **Sync cloud**: Đồng bộ dữ liệu qua cloud
-- [ ] **Team collaboration**: Chia sẻ workspace với team
-- [ ] **Advanced analytics**: Deeper insights và reports
-- [ ] **Mobile app**: React Native version
-- [ ] **Integrations**: Calendar, Slack, Notion integrations
-- [ ] **AI suggestions**: Smart task prioritization
-- [ ] **Habit tracking**: Recurring tasks và habits
-- [ ] **Time tracking**: Actual time spent vs estimated
+- **AI Integration** - Smart task prioritization and scheduling
+- **Cloud Sync** - Google Drive/Dropbox integration
+- **Collaboration** - Shared workspaces for group projects
+- **Study Mode** - Focus timer with Pomodoro technique
+- **Calendar Integration** - Sync with Google Calendar/Outlook
+
+## 🏆 Hackathon Submission
+
+**Submitted by:** [Your Name]
+**Track:** Web Development
+**Submission Date:** September 15, 2024
+**Demo URL:** [Will be provided before deadline]
 
 ## 📄 License
 
-MIT License - Xem file LICENSE để biết thêm chi tiết.
+MIT License - Built for NAVER Vietnam AI Hackathon 2024
 
 ---
 
-**TaskFlow** - Organize your tasks, focus your mind, achieve your goals! 🎯
+*TaskFlow - Empowering Vietnamese students to master their time and achieve their goals* 🎓✨

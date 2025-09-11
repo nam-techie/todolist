@@ -1,12 +1,26 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Clock, Tag, AlertTriangle, Calendar, Edit, Trash2, CheckCircle2, Circle } from 'lucide-react';
 import { Task, Priority, TaskStatus } from '../types/Task';
+import { useLanguage } from '../contexts/LanguageContext';
+import { 
+  MagnifyingGlassIcon,
+  AdjustmentsHorizontalIcon,
+  ClockIcon,
+  TagIcon,
+  PencilIcon,
+  TrashIcon,
+  CheckCircleIcon,
+  PlayIcon
+} from '@heroicons/react/24/outline';
+import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
+import TimeTracker from './TimeTracker';
 
 interface ListViewProps {
   tasks: Task[];
-  onToggleComplete: (taskId: string) => void;
+  onToggleTask: (taskId: string) => void;
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
+  onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
+  searchInputRef?: React.RefObject<HTMLInputElement>;
 }
 
 type SortField = 'title' | 'priority' | 'dueAt' | 'createdAt';
@@ -15,8 +29,7 @@ type SortOrder = 'asc' | 'desc';
 const priorityColors = {
   low: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
   medium: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
-  high: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
-  urgent: 'text-red-400 bg-red-500/10 border-red-500/20'
+  high: 'text-red-400 bg-red-500/10 border-red-500/20'
 };
 
 const statusColors = {
@@ -25,13 +38,15 @@ const statusColors = {
   completed: 'text-green-400 bg-green-500/10 border-green-500/20'
 };
 
-function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListViewProps) {
+function ListView({ tasks, onToggleTask, onEditTask, onDeleteTask, onUpdateTask, searchInputRef }: ListViewProps) {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<TaskStatus | 'all'>('all');
   const [selectedPriority, setSelectedPriority] = useState<Priority | 'all'>('all');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [showFilters, setShowFilters] = useState(false);
+  const [expandedTask, setExpandedTask] = useState<string | null>(null);
 
   const filteredAndSortedTasks = useMemo(() => {
     let filtered = tasks.filter(task => {
@@ -54,13 +69,13 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
           bValue = b.title.toLowerCase();
           break;
         case 'priority':
-          const priorityOrder = { low: 1, medium: 2, high: 3, urgent: 4 };
+          const priorityOrder = { low: 1, medium: 2, high: 3 };
           aValue = priorityOrder[a.priority];
           bValue = priorityOrder[b.priority];
           break;
         case 'dueAt':
-          aValue = a.dueAt ? a.dueAt.getTime() : Infinity;
-          bValue = b.dueAt ? b.dueAt.getTime() : Infinity;
+          aValue = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+          bValue = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
           break;
         case 'createdAt':
           aValue = a.createdAt.getTime();
@@ -81,11 +96,12 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
   }, [tasks, searchQuery, selectedStatus, selectedPriority, sortField, sortOrder]);
 
   const isOverdue = (task: Task) => {
-    return task.dueAt && task.status !== 'completed' && task.dueAt < new Date();
+    return task.dueDate && task.status !== 'completed' && new Date(task.dueDate) < new Date();
   };
 
-  const getTimeUntilDue = (dueAt: Date) => {
+  const getTimeUntilDue = (dueDate: string) => {
     const now = new Date();
+    const dueAt = new Date(dueDate);
     const diffMs = dueAt.getTime() - now.getTime();
     const diffHours = Math.round(diffMs / (1000 * 60 * 60));
     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
@@ -95,10 +111,11 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
     return `Due in ${diffDays} days`;
   };
 
-  const getDueDateColor = (dueAt: Date, status: TaskStatus) => {
+  const getDueDateColor = (dueDate: string, status: TaskStatus) => {
     if (status === 'completed') return 'text-gray-400';
     
     const now = new Date();
+    const dueAt = new Date(dueDate);
     const diffMs = dueAt.getTime() - now.getTime();
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
     
@@ -115,10 +132,11 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="Search tasks..."
+              placeholder={t('searchTasks')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -132,8 +150,8 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
                 : 'bg-gray-800 text-gray-400 hover:text-gray-300 border border-gray-700'
             }`}
           >
-            <Filter className="w-5 h-5" />
-            <span>Filters</span>
+            <AdjustmentsHorizontalIcon className="w-4 h-4" />
+            <span>{t('filters')}</span>
           </button>
         </div>
 
@@ -141,54 +159,53 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
           <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">{t('status')}</label>
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value as TaskStatus | 'all')}
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  <option value="all">All</option>
-                  <option value="pending">Pending</option>
-                  <option value="in-progress">In Progress</option>
-                  <option value="completed">Completed</option>
+                  <option value="all">{t('all')}</option>
+                  <option value="pending">{t('pending')}</option>
+                  <option value="in-progress">{t('inProgress')}</option>
+                  <option value="completed">{t('completed')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Priority</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('priority')}</label>
                 <select
                   value={selectedPriority}
                   onChange={(e) => setSelectedPriority(e.target.value as Priority | 'all')}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  <option value="all">All</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
+                  <option value="all">{t('all')}</option>
+                  <option value="low">{t('lowPriority')}</option>
+                  <option value="medium">{t('mediumPriority')}</option>
+                  <option value="high">{t('highPriority')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Sort by</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('sortBy')}</label>
                 <select
                   value={sortField}
                   onChange={(e) => setSortField(e.target.value as SortField)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  <option value="createdAt">Created Date</option>
-                  <option value="dueAt">Due Date</option>
-                  <option value="priority">Priority</option>
-                  <option value="title">Title</option>
+                  <option value="createdAt">{t('createdDate')}</option>
+                  <option value="dueAt">{t('dueDate')}</option>
+                  <option value="priority">{t('priority')}</option>
+                  <option value="title">{t('title')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Order</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('order')}</label>
                 <select
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value as SortOrder)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  <option value="desc">Descending</option>
-                  <option value="asc">Ascending</option>
+                  <option value="desc">{t('descending')}</option>
+                  <option value="asc">{t('ascending')}</option>
                 </select>
               </div>
             </div>
@@ -199,9 +216,9 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
       {/* Tasks List */}
       <div className="space-y-3">
         {filteredAndSortedTasks.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-lg mb-2">No tasks found</div>
-            <div className="text-gray-500">Try adjusting your search or filters</div>
+            <div className="text-center py-12">
+            <div className="text-gray-400 text-lg mb-2">{t('noTasksFound')}</div>
+            <div className="text-gray-500">{t('adjustFilters')}</div>
           </div>
         ) : (
           filteredAndSortedTasks.map((task) => (
@@ -215,13 +232,13 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
             >
               <div className="flex items-start space-x-4">
                 <button
-                  onClick={() => onToggleComplete(task.id)}
+                  onClick={() => onToggleTask(task.id)}
                   className="mt-1 flex-shrink-0"
                 >
                   {task.status === 'completed' ? (
-                    <CheckCircle2 className="w-6 h-6 text-green-400" />
+                    <CheckCircleIconSolid className="w-6 h-6 text-green-400" />
                   ) : (
-                    <Circle className="w-6 h-6 text-gray-400 hover:text-gray-300 transition-colors" />
+                    <CheckCircleIcon className="w-6 h-6 text-gray-400 hover:text-gray-300 transition-colors" />
                   )}
                 </button>
 
@@ -243,15 +260,24 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
                     <div className="flex items-center space-x-2 ml-4">
                       <button
                         onClick={() => onEditTask(task)}
-                        className="p-2 text-gray-400 hover:text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        title="Edit"
                       >
-                        <Edit className="w-4 h-4" />
+                        <PencilIcon className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setExpandedTask(expandedTask === task.id ? null : task.id)}
+                        className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-700 rounded-lg transition-colors"
+                        title="Time Tracking"
+                      >
+                        <PlayIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => onDeleteTask(task.id)}
                         className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-700 rounded-lg transition-colors"
+                        title="Delete"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -266,14 +292,14 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
                       </span>
                       {task.tags.length > 0 && (
                         <div className="flex items-center space-x-1">
-                          <Tag className="w-3 h-3 text-gray-400" />
+                        <TagIcon className="w-3 h-3 text-gray-400" />
                           {task.tags.slice(0, 2).map((tag, index) => (
-                            <span key={index} className="text-xs text-gray-400">
+                            <span key={index} className="text-xs text-gray-600 dark:text-gray-400">
                               {tag}
                             </span>
                           ))}
                           {task.tags.length > 2 && (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-gray-600 dark:text-gray-400">
                               +{task.tags.length - 2}
                             </span>
                           )}
@@ -281,12 +307,12 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
                       )}
                     </div>
 
-                    {task.dueAt && (
-                      <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-lg font-medium ${getDueDateColor(task.dueAt, task.status)}`}>
-                        <Clock className="w-3 h-3" />
-                        <span className="font-semibold">{getTimeUntilDue(task.dueAt)}</span>
+                    {task.dueDate && (
+                      <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-lg font-medium ${getDueDateColor(task.dueDate, task.status)}`}>
+                        <ClockIcon className="w-3 h-3" />
+                        <span className="font-semibold">{getTimeUntilDue(task.dueDate)}</span>
                         <span className="text-xs opacity-75">
-                          ({task.dueAt.toLocaleDateString('en-US', { 
+                          ({new Date(task.dueDate).toLocaleDateString('en-US', { 
                             month: 'short', 
                             day: 'numeric',
                             hour: '2-digit',
@@ -298,6 +324,16 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
                   </div>
                 </div>
               </div>
+
+              {/* Expanded Time Tracking */}
+              {expandedTask === task.id && (
+                <div className="mt-4 border-t border-gray-700 pt-4">
+                  <TimeTracker
+                    task={task}
+                    onUpdateTask={onUpdateTask}
+                  />
+                </div>
+              )}
             </div>
           ))
         )}

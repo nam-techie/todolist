@@ -1,12 +1,19 @@
 import React, { useMemo } from 'react';
-import { CheckCircle, Clock, AlertCircle, TrendingUp, Calendar, Target } from 'lucide-react';
 import { Task } from '../types/Task';
+import { useLanguage } from '../contexts/LanguageContext';
+import { 
+  ClipboardDocumentListIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  ExclamationTriangleIcon,
+  ChartBarIcon,
+  CheckIcon,
+  CalendarIcon
+} from '@heroicons/react/24/outline';
+import ProductivityChart from './ProductivityChart';
 
 interface AnalyticsViewProps {
   tasks: Task[];
-  onToggleComplete: (taskId: string) => void;
-  onEditTask: (task: Task) => void;
-  onDeleteTask: (taskId: string) => void;
 }
 
 interface AnalyticsData {
@@ -21,6 +28,8 @@ interface AnalyticsData {
 }
 
 function AnalyticsView({ tasks }: AnalyticsViewProps) {
+  const { t } = useLanguage();
+  
   const analytics = useMemo((): AnalyticsData => {
     const now = new Date();
     
@@ -30,7 +39,7 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
       pending: 0,
       overdue: 0,
       completionRate: 0,
-      priorityDistribution: { low: 0, medium: 0, high: 0, urgent: 0 },
+      priorityDistribution: { low: 0, medium: 0, high: 0 },
       statusDistribution: { pending: 0, 'in-progress': 0, completed: 0 },
       weeklyCompletion: []
     };
@@ -40,7 +49,7 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
       if (task.status === 'completed') data.completed++;
       else data.pending++;
       
-      if (task.dueAt && task.status !== 'completed' && task.dueAt < now) {
+      if (task.dueDate && task.status !== 'completed' && new Date(task.dueDate) < now) {
         data.overdue++;
       }
       
@@ -62,7 +71,7 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
       day: weekDays[date.getDay()],
       completed: tasks.filter(task => 
         task.status === 'completed' && 
-        task.updatedAt.toDateString() === date.toDateString()
+        new Date(task.updatedAt).toDateString() === date.toDateString()
       ).length
     }));
 
@@ -136,28 +145,28 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          icon={Target}
-          title="Total Tasks"
+          icon={ClipboardDocumentListIcon}
+          title={t('totalTasks')}
           value={analytics.total}
           subtitle="All time"
           color="blue"
         />
         <StatCard
-          icon={CheckCircle}
-          title="Completed"
+          icon={CheckCircleIcon}
+          title={t('completed')}
           value={analytics.completed}
           subtitle={`${analytics.completionRate.toFixed(1)}% completion rate`}
           color="green"
         />
         <StatCard
-          icon={Clock}
+          icon={ClockIcon}
           title="Pending"
           value={analytics.pending}
           subtitle="Tasks remaining"
           color="yellow"
         />
         <StatCard
-          icon={AlertCircle}
+          icon={ExclamationTriangleIcon}
           title="Overdue"
           value={analytics.overdue}
           subtitle="Past due date"
@@ -169,33 +178,27 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
         {/* Priority Distribution */}
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
           <div className="flex items-center space-x-3 mb-6">
-            <TrendingUp className="w-6 h-6 text-green-400" />
+            <ChartBarIcon className="w-6 h-6 text-green-400" />
             <h3 className="text-lg font-semibold text-white">Priority Distribution</h3>
           </div>
           <div className="space-y-4">
             <ProgressBar
-              label="Urgent"
-              value={analytics.priorityDistribution.urgent}
-              max={analytics.total}
-              color="red"
-            />
-            <ProgressBar
               label="High"
               value={analytics.priorityDistribution.high}
               max={analytics.total}
-              color="yellow"
+              color="red"
             />
             <ProgressBar
               label="Medium"
               value={analytics.priorityDistribution.medium}
               max={analytics.total}
-              color="blue"
+              color="yellow"
             />
             <ProgressBar
               label="Low"
               value={analytics.priorityDistribution.low}
               max={analytics.total}
-              color="green"
+              color="blue"
             />
           </div>
         </div>
@@ -203,12 +206,12 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
         {/* Status Distribution */}
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
           <div className="flex items-center space-x-3 mb-6">
-            <CheckCircle className="w-6 h-6 text-green-400" />
+            <CheckIcon className="w-6 h-6 text-green-400" />
             <h3 className="text-lg font-semibold text-white">Status Overview</h3>
           </div>
           <div className="space-y-4">
             <ProgressBar
-              label="Completed"
+              label={t('completed')}
               value={analytics.statusDistribution.completed}
               max={analytics.total}
               color="green"
@@ -232,7 +235,7 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
       {/* Weekly Completion Chart */}
       <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Calendar className="w-6 h-6 text-green-400" />
+          <CalendarIcon className="w-6 h-6 text-green-400" />
           <h3 className="text-lg font-semibold text-white">Weekly Completion</h3>
         </div>
         <div className="flex items-end justify-between space-x-2 h-48">
@@ -298,6 +301,9 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
           </div>
         </div>
       </div>
+
+      {/* Advanced Productivity Charts */}
+      <ProductivityChart tasks={tasks} />
     </div>
   );
 }
