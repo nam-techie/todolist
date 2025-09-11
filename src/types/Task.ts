@@ -7,12 +7,12 @@ export interface Task {
   description?: string;
   priority: Priority;
   status: TaskStatus;
-  dueDate?: string;
+  dueDate?: Date;
   tags: string[];
   workspaceId: string;
   estimatedMinutes?: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Workspace {

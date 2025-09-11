@@ -6,7 +6,15 @@ class TaskService {
   getTasks(): Task[] {
     try {
       const tasks = localStorage.getItem(this.storageKey);
-      return tasks ? JSON.parse(tasks) : [];
+      if (!tasks) return [];
+      
+      const parsedTasks = JSON.parse(tasks);
+      return parsedTasks.map((task: any) => ({
+        ...task,
+        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+        createdAt: new Date(task.createdAt),
+        updatedAt: new Date(task.updatedAt)
+      }));
     } catch (error) {
       console.error('Error loading tasks:', error);
       return [];
@@ -15,18 +23,26 @@ class TaskService {
 
   saveTasks(tasks: Task[]): void {
     try {
-      localStorage.setItem(this.storageKey, JSON.stringify(tasks));
+      const tasksToSave = tasks.map(task => ({
+        ...task,
+        dueDate: task.dueDate ? task.dueDate.toISOString() : undefined,
+        createdAt: task.createdAt.toISOString(),
+        updatedAt: task.updatedAt.toISOString()
+      }));
+      localStorage.setItem(this.storageKey, JSON.stringify(tasksToSave));
     } catch (error) {
       console.error('Error saving tasks:', error);
     }
   }
 
   createTask(taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Task {
+    const now = new Date();
     const newTask: Task = {
       ...taskData,
+      dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
       id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: now,
+      updatedAt: now,
     };
 
     const tasks = this.getTasks();
@@ -47,7 +63,8 @@ class TaskService {
     const updatedTask = {
       ...tasks[taskIndex],
       ...updates,
-      updatedAt: new Date().toISOString(),
+      dueDate: updates.dueDate ? new Date(updates.dueDate) : tasks[taskIndex].dueDate,
+      updatedAt: new Date(),
     };
 
     tasks[taskIndex] = updatedTask;

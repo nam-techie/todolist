@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, Clock, Tag, AlertTriangle, Calendar, Edit, Trash2, CheckCircle2, Circle } from 'lucide-react';
-import { Task, TaskPriority, TaskStatus } from '../types/Task';
+import { Task, Priority, TaskStatus } from '../types/Task';
 
 interface ListViewProps {
   tasks: Task[];
@@ -28,7 +28,7 @@ const statusColors = {
 function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<TaskStatus | 'all'>('all');
-  const [selectedPriority, setSelectedPriority] = useState<TaskPriority | 'all'>('all');
+  const [selectedPriority, setSelectedPriority] = useState<Priority | 'all'>('all');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [showFilters, setShowFilters] = useState(false);
@@ -157,7 +157,7 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
                 <label className="block text-sm font-medium text-gray-300 mb-2">Priority</label>
                 <select
                   value={selectedPriority}
-                  onChange={(e) => setSelectedPriority(e.target.value as TaskPriority | 'all')}
+                  onChange={(e) => setSelectedPriority(e.target.value as Priority | 'all')}
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="all">All</option>
