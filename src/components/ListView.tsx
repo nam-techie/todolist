@@ -215,7 +215,7 @@ function ListView({ tasks, onToggleComplete, onEditTask, onDeleteTask }: ListVie
             >
               <div className="flex items-start space-x-4">
                 <button
-                  onClick={() => onToggleComplete(task.id)}
+                  onClick={() => onToggleTask(task.id)}
                   className="mt-1 flex-shrink-0"
                 >
                   {task.status === 'completed' ? (
