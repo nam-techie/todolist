@@ -120,6 +120,7 @@ function App() {
         return (
           <CalendarView
             tasks={filteredTasks}
+            onToggleTask={handleToggleTask}
             onEditTask={(task) => {
               setEditingTask(task);
               setShowTaskForm(true);

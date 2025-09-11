@@ -226,7 +226,7 @@ function CalendarView({ tasks, onToggleComplete, onEditTask }: CalendarViewProps
                     </div>
                   </div>
                   <button
-                    onClick={() => onToggleComplete(task.id)}
+                    onClick={() => onToggleTask(task.id)}
                     className={`ml-2 px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                       task.status === 'completed'
                         ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
