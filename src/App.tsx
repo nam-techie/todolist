@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { Task, Workspace } from './types/Task';
-import { useTaskManager } from './hooks/useTaskManager';
+import { useFirebaseTaskManager } from './hooks/useFirebaseTaskManager';
 import { useLanguage } from './contexts/LanguageContext';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useNotifications } from './hooks/useNotifications';
 import { useOfflineSync } from './hooks/useOfflineSync';
 import { smartNotificationService } from './services/smartNotificationService';
+import { useAuth } from './contexts/AuthContext';
 import Header from './components/Header';
 import OfflineIndicator from './components/OfflineIndicator';
 import Sidebar from './components/Sidebar';
@@ -15,10 +16,12 @@ import WorkspaceManagerModal from './components/WorkspaceManagerModal';
 import FocusTimer from './components/FocusTimer';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
 import NotificationSystem from './components/NotificationSystem';
+import LoginScreen from './components/LoginScreen';
 
 type ViewType = 'list' | 'calendar' | 'analytics';
 
 function App() {
+  const { user, loading: authLoading } = useAuth();
   const [currentView, setCurrentView] = useState<ViewType>('list');
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -32,6 +35,19 @@ function App() {
   const { notifications, removeNotification, notifySuccess, notifyError, notifyWarning, notifyInfo } = useNotifications();
   const { isOnline, syncStatus, pendingChanges, handleSync } = useOfflineSync();
 
+  // Show login screen if user is not authenticated
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-white text-xl">Đang tải...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginScreen />;
+  }
+
 
   const {
     tasks,
@@ -40,6 +56,8 @@ function App() {
     setCurrentWorkspace,
     filteredTasks,
     currentWorkspaceData,
+    loading,
+    syncing,
     handleCreateTask: createTask,
     handleUpdateTask: updateTask,
     handleDeleteTask,
@@ -47,20 +65,28 @@ function App() {
     handleCreateWorkspace,
     handleUpdateWorkspace,
     handleDeleteWorkspace
-  } = useTaskManager();
+  } = useFirebaseTaskManager();
 
-  const handleCreateTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-    createTask(taskData);
-    setShowTaskForm(false);
-    notifySuccess('Task Created', 'Your task has been created successfully!');
+  const handleCreateTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      await createTask(taskData);
+      setShowTaskForm(false);
+      notifySuccess('Task Created', 'Your task has been created successfully!');
+    } catch (error) {
+      notifyError('Error', 'Failed to create task. Please try again.');
+    }
   };
 
-  const handleUpdateTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleUpdateTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (editingTask) {
-      updateTask(editingTask.id, taskData);
-      setEditingTask(null);
-      setShowTaskForm(false);
-      notifySuccess('Task Updated', 'Your task has been updated successfully!');
+      try {
+        await updateTask(editingTask.id, taskData);
+        setEditingTask(null);
+        setShowTaskForm(false);
+        notifySuccess('Task Updated', 'Your task has been updated successfully!');
+      } catch (error) {
+        notifyError('Error', 'Failed to update task. Please try again.');
+      }
     }
   };
 
@@ -69,19 +95,27 @@ function App() {
     setShowTaskForm(true);
   };
 
-  const handleDeleteTaskWithNotification = (taskId: string) => {
-    handleDeleteTask(taskId);
-    notifySuccess('Task Deleted', 'Task has been removed successfully!');
+  const handleDeleteTaskWithNotification = async (taskId: string) => {
+    try {
+      await handleDeleteTask(taskId);
+      notifySuccess('Task Deleted', 'Task has been removed successfully!');
+    } catch (error) {
+      notifyError('Error', 'Failed to delete task. Please try again.');
+    }
   };
 
-  const handleToggleTaskWithNotification = (taskId: string) => {
+  const handleToggleTaskWithNotification = async (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
-    handleToggleTask(taskId);
-    if (task) {
-      const newStatus = task.status === 'completed' ? 'pending' : 'completed';
-      if (newStatus === 'completed') {
-        notifySuccess('Task Completed', `"${task.title}" has been marked as completed!`);
+    try {
+      await handleToggleTask(taskId);
+      if (task) {
+        const newStatus = task.status === 'completed' ? 'pending' : 'completed';
+        if (newStatus === 'completed') {
+          notifySuccess('Task Completed', `"${task.title}" has been marked as completed!`);
+        }
       }
+    } catch (error) {
+      notifyError('Error', 'Failed to update task. Please try again.');
     }
   };
 

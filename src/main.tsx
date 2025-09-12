@@ -5,6 +5,7 @@ import './index.css';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UIProvider } from './contexts/UIContext';
+import { AuthProvider } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Register Service Worker
@@ -23,13 +24,15 @@ if ('serviceWorker' in navigator) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <ThemeProvider>
-        <LanguageProvider>
-          <UIProvider>
-            <App />
-          </UIProvider>
-        </LanguageProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <UIProvider>
+              <App />
+            </UIProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </ErrorBoundary>
   </StrictMode>
 );
