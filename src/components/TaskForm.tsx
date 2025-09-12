@@ -9,7 +9,8 @@ import {
   FlagIcon,
   TagIcon,
   MapPinIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  CheckIcon
 } from '@heroicons/react/24/outline';
 
 interface TaskFormProps {
@@ -28,6 +29,9 @@ const TaskForm: React.FC<TaskFormProps> = ({
   onClose 
 }) => {
   const { t } = useLanguage();
+  const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -111,9 +115,20 @@ const TaskForm: React.FC<TaskFormProps> = ({
     high: 'bg-red-500'
   };
 
+  const priorityOptions = [
+    { value: 'low', label: t('lowPriority'), color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+    { value: 'medium', label: t('mediumPriority'), color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' },
+    { value: 'high', label: t('highPriority'), color: 'text-red-400 bg-red-500/10 border-red-500/20' }
+  ];
+
+  const statusOptions = [
+    { value: 'pending', label: t('pending'), color: 'text-gray-400 bg-gray-500/10 border-gray-500/20' },
+    { value: 'in-progress', label: t('inProgress'), color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+    { value: 'completed', label: t('completed'), color: 'text-green-400 bg-green-500/10 border-green-500/20' }
+  ];
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 rounded-xl p-4 lg:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-700 shadow-2xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">
             {task ? t('editTask') : t('createNewTask')}
@@ -136,7 +151,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               placeholder={t('taskTitlePlaceholder')}
               required
             />
@@ -151,7 +166,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={3}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none transition-all"
               placeholder={t('descriptionPlaceholder')}
             />
           </div>
@@ -164,16 +179,43 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 {t('priority')}
               </label>
               <div className="relative">
-                <select
-                  value={formData.priority}
-                  onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as Priority }))}
-                  className="w-full px-4 py-3 pr-10 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer"
+                <button
+                  type="button"
+                  onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all flex items-center justify-between"
                 >
-                  <option value="low">{t('lowPriority')}</option>
-                  <option value="medium">{t('mediumPriority')}</option>
-                  <option value="high">{t('highPriority')}</option>
-                </select>
-                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-3 h-3 rounded-full ${priorityColors[formData.priority]}`}></div>
+                    <span>{priorityOptions.find(p => p.value === formData.priority)?.label}</span>
+                  </div>
+                  <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${showPriorityDropdown ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {showPriorityDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl z-10 overflow-hidden">
+                    {priorityOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, priority: option.value as Priority }));
+                          setShowPriorityDropdown(false);
+                        }}
+                        className={`w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors flex items-center justify-between ${
+                          formData.priority === option.value ? 'bg-gray-700' : ''
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-3 h-3 rounded-full ${priorityColors[option.value as Priority]}`}></div>
+                          <span className="text-white">{option.label}</span>
+                        </div>
+                        {formData.priority === option.value && (
+                          <CheckIcon className="w-4 h-4 text-green-400" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -183,16 +225,37 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 {t('status')}
               </label>
               <div className="relative">
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as TaskStatus }))}
-                  className="w-full px-4 py-3 pr-10 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer"
+                <button
+                  type="button"
+                  onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all flex items-center justify-between"
                 >
-                  <option value="pending">{t('pending')}</option>
-                  <option value="in-progress">{t('inProgress')}</option>
-                  <option value="completed">{t('completed')}</option>
-                </select>
-                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <span>{statusOptions.find(s => s.value === formData.status)?.label}</span>
+                  <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${showStatusDropdown ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {showStatusDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl z-10 overflow-hidden">
+                    {statusOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, status: option.value as TaskStatus }));
+                          setShowStatusDropdown(false);
+                        }}
+                        className={`w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors flex items-center justify-between ${
+                          formData.status === option.value ? 'bg-gray-700' : ''
+                        }`}
+                      >
+                        <span className="text-white">{option.label}</span>
+                        {formData.status === option.value && (
+                          <CheckIcon className="w-4 h-4 text-green-400" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -224,7 +287,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 step="5"
                 value={formData.estimatedMinutes}
                 onChange={(e) => setFormData(prev => ({ ...prev, estimatedMinutes: parseInt(e.target.value) || 30 }))}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
             </div>
           </div>
@@ -236,18 +299,43 @@ const TaskForm: React.FC<TaskFormProps> = ({
               {t('workspace')}
             </label>
             <div className="relative">
-              <select
-                value={formData.workspaceId}
-                onChange={(e) => setFormData(prev => ({ ...prev, workspaceId: e.target.value }))}
-                className="w-full px-4 py-3 pr-10 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer"
+              <button
+                type="button"
+                onClick={() => setShowWorkspaceDropdown(!showWorkspaceDropdown)}
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all flex items-center justify-between"
               >
-                {workspaces.map((workspace) => (
-                  <option key={workspace.id} value={workspace.id}>
-                    {workspace.icon} {workspace.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <div className="flex items-center space-x-2">
+                  <span>{workspaces.find(w => w.id === formData.workspaceId)?.icon}</span>
+                  <span>{workspaces.find(w => w.id === formData.workspaceId)?.name}</span>
+                </div>
+                <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${showWorkspaceDropdown ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {showWorkspaceDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl z-10 overflow-hidden">
+                  {workspaces.map((workspace) => (
+                    <button
+                      key={workspace.id}
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, workspaceId: workspace.id }));
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors flex items-center justify-between ${
+                        formData.workspaceId === workspace.id ? 'bg-gray-700' : ''
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span>{workspace.icon}</span>
+                        <span className="text-white">{workspace.name}</span>
+                      </div>
+                      {formData.workspaceId === workspace.id && (
+                        <CheckIcon className="w-4 h-4 text-green-400" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -265,13 +353,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 placeholder="Add custom tag..."
               />
               <button
                 type="button"
                 onClick={() => addTag()}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors font-medium"
               >
                 Add
               </button>
@@ -289,7 +377,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
                       key={tag}
                       type="button"
                       onClick={() => addTag(tag)}
-                      className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white rounded-full text-sm transition-colors border border-gray-600 hover:border-gray-500"
+                      className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white rounded-full text-sm transition-colors border border-gray-600 hover:border-gray-500 hover:scale-105"
                     >
                       + {tag}
                     </button>
@@ -305,13 +393,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
                   {formData.tags.map((tag, index) => (
                     <span
                       key={index}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-green-600/20 text-green-400 rounded-full text-sm border border-green-500/30"
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-green-600/20 text-green-400 rounded-full text-sm border border-green-500/30 hover:bg-green-600/30 transition-colors"
                     >
                       {tag}
                       <button
                         type="button"
                         onClick={() => removeTag(tag)}
-                        className="hover:text-red-400 transition-colors ml-1"
+                        className="hover:text-red-400 transition-colors ml-1 hover:scale-110"
                       >
                         <XMarkIcon className="w-3 h-3" />
                       </button>
@@ -323,7 +411,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
           </div>
 
           {/* Priority Preview */}
-          <div className="flex items-center gap-3 p-4 bg-gray-800 rounded-lg">
+          <div className="flex items-center gap-3 p-4 bg-gray-800 rounded-xl border border-gray-700/50">
             <div className={`w-3 h-3 rounded-full ${priorityColors[formData.priority]}`}></div>
             <span className="text-gray-300 capitalize">{formData.priority} Priority Task</span>
           </div>
@@ -333,13 +421,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl transition-colors font-medium"
             >
 {t('cancel')}
             </button>
             <button
               type="submit"
-              className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
+              className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors font-medium shadow-lg hover:shadow-green-500/25"
             >
 {task ? t('updateTask') : t('createTask')}
             </button>

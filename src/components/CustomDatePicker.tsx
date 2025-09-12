@@ -213,7 +213,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
 
           {/* Action Buttons */}
           <div className="flex justify-between pt-4 border-t border-gray-700 mt-4">
-            <div className="flex space-x-2">
+      className={`w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-left flex items-center justify-between transition-all ${className}`}
               <button
                 type="button"
                 onClick={clearDate}
@@ -222,7 +222,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                 Clear
               </button>
               <button
-                type="button"
+      <div className="absolute top-full left-0 right-0 mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-xl z-50 p-4">
                 onClick={setToday}
                 className="px-3 py-2 text-sm text-blue-400 hover:text-blue-300 hover:bg-gray-800 rounded-lg transition-colors"
               >
@@ -232,15 +232,21 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+              className="p-2 hover:bg-gray-800 rounded-xl transition-colors"
             >
               Done
             </button>
           </div>
         </div>
       )}
-    </div>
+              className="p-2 hover:bg-gray-800 rounded-xl transition-colors"
   );
 };
 
 export default CustomDatePicker;
+
+              className={`p-2 text-sm rounded-xl transition-colors ${
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              className="px-3 py-2 text-sm text-gray-400 hover:text-gray-300 hover:bg-gray-800 rounded-xl transition-colors"
+              className="px-3 py-2 text-sm text-blue-400 hover:text-blue-300 hover:bg-gray-800 rounded-xl transition-colors"
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-colors shadow-lg hover:shadow-green-500/25"

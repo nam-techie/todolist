@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({
           {/* Language Toggle */}
           <button
             onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
-            className="px-3 py-2 hover:bg-gray-800 rounded-lg transition-colors text-gray-300 text-sm font-medium"
+            className="px-3 py-2 hover:bg-gray-800 rounded-xl transition-colors text-gray-300 text-sm font-medium"
             title={t('language')}
           >
             {language === 'vi' ? 'EN' : 'VI'}
@@ -46,14 +46,14 @@ const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={() => setShowFocusTimer(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors text-white shadow-lg hover:shadow-blue-500/25"
           >
             <ClockIcon className="w-4 h-4" />
             <span className="hidden sm:inline">{t('focusTimer')}</span>
           </button>
           <button
             onClick={() => setShowTaskForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-xl transition-colors text-white shadow-lg hover:shadow-green-500/25"
           >
             <PlusIcon className="w-4 h-4" />
             <span className="hidden sm:inline">{t('addTask')}</span>

@@ -144,6 +144,18 @@ function App() {
       smartNotificationService.stopMonitoring();
     };
   }, [filteredTasks, notifySuccess, notifyWarning, notifyError, notifyInfo]);
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close any open dropdowns when clicking outside
+      const target = event.target as HTMLElement;
+      if (!target.closest('.dropdown-container')) {
+        // This will be handled by individual dropdown components
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className={`${currentView === 'calendar' ? 'h-screen' : 'min-h-screen'} bg-gray-950 text-white flex flex-col ${currentView === 'calendar' ? 'overflow-hidden' : ''}`}>
