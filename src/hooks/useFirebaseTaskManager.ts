@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Task, Workspace } from '../types/Task';
 import { firebaseService } from '../services/firebaseService';
 import { workspaceService } from '../services/workspaceService';
@@ -13,28 +13,6 @@ export const useFirebaseTaskManager = () => {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
 
-  // Migrate local data to Firebase on first login
-  const migrateLocalData = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      setSyncing(true);
-      const localTasks = taskService.getTasks();
-      
-      if (localTasks.length > 0) {
-        console.log('Migrating local tasks to Firebase...');
-        await firebaseService.migrateLocalTasks(localTasks, user.uid);
-        
-        // Clear local storage after successful migration
-        localStorage.removeItem('tasks');
-        console.log('Migration completed successfully');
-      }
-    } catch (error) {
-      console.error('Error migrating local data:', error);
-    } finally {
-      setSyncing(false);
-    }
-  }, [user]);
 
   // Subscribe to real-time updates
   useEffect(() => {
@@ -47,7 +25,27 @@ export const useFirebaseTaskManager = () => {
     setLoading(true);
     
     // Check and migrate local data first
-    migrateLocalData();
+    const migrateTasks = async () => {
+      try {
+        setSyncing(true);
+        const localTasks = taskService.getTasks();
+        
+        if (localTasks.length > 0) {
+          console.log('Migrating local tasks to Firebase...');
+          await firebaseService.migrateLocalTasks(localTasks, user.uid);
+          
+          // Clear local storage after successful migration
+          localStorage.removeItem('tasks');
+          console.log('Migration completed successfully');
+        }
+      } catch (error) {
+        console.error('Error migrating local data:', error);
+      } finally {
+        setSyncing(false);
+      }
+    };
+
+    migrateTasks();
 
     // Subscribe to real-time updates
     const unsubscribe = firebaseService.subscribeToTasks(user.uid, (updatedTasks) => {
@@ -56,7 +54,7 @@ export const useFirebaseTaskManager = () => {
     });
 
     return unsubscribe;
-  }, [user, migrateLocalData]);
+  }, [user]);
 
   // Load workspaces (still using local storage for now)
   useEffect(() => {

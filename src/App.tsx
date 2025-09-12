@@ -35,20 +35,7 @@ function App() {
   const { notifications, removeNotification, notifySuccess, notifyError, notifyWarning, notifyInfo } = useNotifications();
   const { isOnline, syncStatus, pendingChanges, handleSync } = useOfflineSync();
 
-  // Show login screen if user is not authenticated
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-white text-xl">Đang tải...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <LoginScreen />;
-  }
-
-
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const {
     tasks,
     workspaces,
@@ -56,8 +43,8 @@ function App() {
     setCurrentWorkspace,
     filteredTasks,
     currentWorkspaceData,
-    loading,
-    syncing,
+    // loading,
+    // syncing,
     handleCreateTask: createTask,
     handleUpdateTask: updateTask,
     handleDeleteTask,
@@ -66,58 +53,6 @@ function App() {
     handleUpdateWorkspace,
     handleDeleteWorkspace
   } = useFirebaseTaskManager();
-
-  const handleCreateTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-    try {
-      await createTask(taskData);
-      setShowTaskForm(false);
-      notifySuccess('Task Created', 'Your task has been created successfully!');
-    } catch (error) {
-      notifyError('Error', 'Failed to create task. Please try again.');
-    }
-  };
-
-  const handleUpdateTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingTask) {
-      try {
-        await updateTask(editingTask.id, taskData);
-        setEditingTask(null);
-        setShowTaskForm(false);
-        notifySuccess('Task Updated', 'Your task has been updated successfully!');
-      } catch (error) {
-        notifyError('Error', 'Failed to update task. Please try again.');
-      }
-    }
-  };
-
-  const handleEditTask = (task: Task) => {
-    setEditingTask(task);
-    setShowTaskForm(true);
-  };
-
-  const handleDeleteTaskWithNotification = async (taskId: string) => {
-    try {
-      await handleDeleteTask(taskId);
-      notifySuccess('Task Deleted', 'Task has been removed successfully!');
-    } catch (error) {
-      notifyError('Error', 'Failed to delete task. Please try again.');
-    }
-  };
-
-  const handleToggleTaskWithNotification = async (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    try {
-      await handleToggleTask(taskId);
-      if (task) {
-        const newStatus = task.status === 'completed' ? 'pending' : 'completed';
-        if (newStatus === 'completed') {
-          notifySuccess('Task Completed', `"${task.title}" has been marked as completed!`);
-        }
-      }
-    } catch (error) {
-      notifyError('Error', 'Failed to update task. Please try again.');
-    }
-  };
 
   // Keyboard shortcuts
   const { getShortcuts } = useKeyboardShortcuts({
@@ -178,6 +113,7 @@ function App() {
       smartNotificationService.stopMonitoring();
     };
   }, [filteredTasks, notifySuccess, notifyWarning, notifyError, notifyInfo]);
+
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // Close any open dropdowns when clicking outside
@@ -190,6 +126,72 @@ function App() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Show login screen if user is not authenticated
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-white text-xl">Đang tải...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginScreen />;
+  }
+
+  const handleCreateTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      await createTask(taskData);
+      setShowTaskForm(false);
+      notifySuccess('Task Created', 'Your task has been created successfully!');
+    } catch {
+      notifyError('Error', 'Failed to create task. Please try again.');
+    }
+  };
+
+  const handleUpdateTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (editingTask) {
+      try {
+        await updateTask(editingTask.id, taskData);
+        setEditingTask(null);
+        setShowTaskForm(false);
+        notifySuccess('Task Updated', 'Your task has been updated successfully!');
+      } catch {
+        notifyError('Error', 'Failed to update task. Please try again.');
+      }
+    }
+  };
+
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+    setShowTaskForm(true);
+  };
+
+  const handleDeleteTaskWithNotification = async (taskId: string) => {
+    try {
+      await handleDeleteTask(taskId);
+      notifySuccess('Task Deleted', 'Task has been removed successfully!');
+    } catch {
+      notifyError('Error', 'Failed to delete task. Please try again.');
+    }
+  };
+
+  const handleToggleTaskWithNotification = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    try {
+      await handleToggleTask(taskId);
+      if (task) {
+        const newStatus = task.status === 'completed' ? 'pending' : 'completed';
+        if (newStatus === 'completed') {
+          notifySuccess('Task Completed', `"${task.title}" has been marked as completed!`);
+        }
+      }
+    } catch {
+      notifyError('Error', 'Failed to update task. Please try again.');
+    }
+  };
+
 
   return (
     <div className={`${currentView === 'calendar' ? 'h-screen' : 'min-h-screen'} bg-gray-950 text-white flex flex-col ${currentView === 'calendar' ? 'overflow-hidden' : ''}`}>
