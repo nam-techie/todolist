@@ -1,6 +1,24 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
 import { Workspace } from '../types/Task';
+import {
+  HomeIcon,
+  BriefcaseIcon,
+  TargetIcon,
+  HeartIcon,
+  BookOpenIcon,
+  PaintBrushIcon,
+  BeakerIcon,
+  CakeIcon,
+  SparklesIcon,
+  LightBulbIcon,
+  MusicalNoteIcon,
+  PaperAirplaneIcon,
+  UserIcon,
+  PencilIcon,
+  ComputerDesktopIcon,
+  PuzzlePieceIcon
+} from '@heroicons/react/24/outline';
 
 interface WorkspaceManagerProps {
   workspaces: Workspace[];
@@ -16,9 +34,28 @@ const WORKSPACE_COLORS = [
   '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'
 ];
 
+const WORKSPACE_ICON_COMPONENTS = {
+  'home': HomeIcon,
+  'briefcase': BriefcaseIcon,
+  'target': TargetIcon,
+  'heart': HeartIcon,
+  'book': BookOpenIcon,
+  'paint': PaintBrushIcon,
+  'beaker': BeakerIcon,
+  'cake': CakeIcon,
+  'sparkles': SparklesIcon,
+  'lightbulb': LightBulbIcon,
+  'music': MusicalNoteIcon,
+  'plane': PaperAirplaneIcon,
+  'user': UserIcon,
+  'pencil': PencilIcon,
+  'computer': ComputerDesktopIcon,
+  'puzzle': PuzzlePieceIcon
+};
+
 const WORKSPACE_ICONS = [
-  '🏠', '💼', '🎯', '💪', '📚', '🎨', '🔬', '🍳',
-  '🌱', '💡', '🎵', '✈️', '🏃‍♂️', '📝', '💻', '🎮'
+  'home', 'briefcase', 'target', 'heart', 'book', 'paint', 'beaker', 'cake',
+  'sparkles', 'lightbulb', 'music', 'plane', 'user', 'pencil', 'computer', 'puzzle'
 ];
 
 function WorkspaceManager({ 
@@ -87,7 +124,7 @@ function WorkspaceManager({
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-medium"
                 style={{ backgroundColor: workspace.color }}
               >
-                {workspace.icon}
+                {React.createElement(WORKSPACE_ICON_COMPONENTS[workspace.icon as keyof typeof WORKSPACE_ICON_COMPONENTS] || HomeIcon, { className: "w-5 h-5" })}
               </div>
               <span className="font-medium">{workspace.name}</span>
             </div>
@@ -151,20 +188,23 @@ function WorkspaceManager({
                 Icon
               </label>
               <div className="grid grid-cols-8 gap-2">
-                {WORKSPACE_ICONS.map(icon => (
-                  <button
-                    key={icon}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, icon }))}
-                    className={`p-2 rounded-lg text-lg transition-colors ${
-                      formData.icon === icon
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-700 hover:bg-gray-600'
-                    }`}
-                  >
-                    {icon}
-                  </button>
-                ))}
+                {WORKSPACE_ICONS.map(icon => {
+                  const IconComponent = WORKSPACE_ICON_COMPONENTS[icon as keyof typeof WORKSPACE_ICON_COMPONENTS];
+                  return (
+                    <button
+                      key={icon}
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, icon }))}
+                      className={`p-2 rounded-lg transition-colors ${
+                        formData.icon === icon
+                          ? 'bg-green-500 text-white'
+                          : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                      }`}
+                    >
+                      <IconComponent className="w-5 h-5" />
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
