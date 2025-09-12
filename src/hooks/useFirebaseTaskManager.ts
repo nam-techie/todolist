@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Task, Workspace } from '../types/Task';
 import { firebaseService } from '../services/firebaseService';
 import { workspaceService } from '../services/workspaceService';
+import { UserWorkspaceService } from '../services/userWorkspaceService';
 import { useAuth } from '../contexts/AuthContext';
 import { taskService } from '../services/taskService';
 
@@ -56,11 +57,19 @@ export const useFirebaseTaskManager = () => {
     return unsubscribe;
   }, [user]);
 
-  // Load workspaces (still using local storage for now)
+  // Load workspaces and initialize user workspace
   useEffect(() => {
     const loadedWorkspaces = workspaceService.getWorkspaces();
     setWorkspaces(loadedWorkspaces);
-  }, []);
+
+    // Initialize user workspace on first login
+    if (user) {
+      UserWorkspaceService.initializeUserWorkspace(user);
+      // Reload workspaces after potential update
+      const updatedWorkspaces = workspaceService.getWorkspaces();
+      setWorkspaces(updatedWorkspaces);
+    }
+  }, [user]);
 
   const handleCreateTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!user) throw new Error('User not authenticated');
