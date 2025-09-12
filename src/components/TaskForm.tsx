@@ -47,9 +47,24 @@ const TaskForm: React.FC<TaskFormProps> = ({
   
   // Predefined tags
   const predefinedTags = [
-    'Work', 'Personal', 'Urgent', 'Meeting', 'Study', 'Exercise', 
-    'Shopping', 'Health', 'Travel', 'Finance', 'Project', 'Call',
-    'Email', 'Review', 'Planning', 'Research', 'Design', 'Development'
+    { key: 'work', label: t('predefinedTags.work') },
+    { key: 'personal', label: t('predefinedTags.personal') },
+    { key: 'urgent', label: t('predefinedTags.urgent') },
+    { key: 'meeting', label: t('predefinedTags.meeting') },
+    { key: 'study', label: t('predefinedTags.study') },
+    { key: 'exercise', label: t('predefinedTags.exercise') },
+    { key: 'shopping', label: t('predefinedTags.shopping') },
+    { key: 'health', label: t('predefinedTags.health') },
+    { key: 'travel', label: t('predefinedTags.travel') },
+    { key: 'finance', label: t('predefinedTags.finance') },
+    { key: 'project', label: t('predefinedTags.project') },
+    { key: 'call', label: t('predefinedTags.call') },
+    { key: 'email', label: t('predefinedTags.email') },
+    { key: 'review', label: t('predefinedTags.review') },
+    { key: 'planning', label: t('predefinedTags.planning') },
+    { key: 'research', label: t('predefinedTags.research') },
+    { key: 'design', label: t('predefinedTags.design') },
+    { key: 'development', label: t('predefinedTags.development') }
   ];
 
   useEffect(() => {
@@ -354,7 +369,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="Add custom tag..."
+                placeholder={t('addCustomTag')}
               />
               <button
                 type="button"
@@ -370,16 +385,16 @@ const TaskForm: React.FC<TaskFormProps> = ({
               <p className="text-xs text-gray-400 mb-2">Quick tags:</p>
               <div className="flex flex-wrap gap-2">
                 {predefinedTags
-                  .filter(tag => !formData.tags.includes(tag))
+                  .filter(tag => !formData.tags.includes(tag.label))
                   .slice(0, 12)
                   .map((tag) => (
                     <button
-                      key={tag}
+                      key={tag.key}
                       type="button"
-                      onClick={() => addTag(tag)}
+                      onClick={() => addTag(tag.label)}
                       className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white rounded-full text-sm transition-colors border border-gray-600 hover:border-gray-500 hover:scale-105"
                     >
-                      + {tag}
+                      + {tag.label}
                     </button>
                   ))}
               </div>

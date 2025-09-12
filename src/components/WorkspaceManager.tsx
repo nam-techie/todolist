@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
 import { Workspace } from '../types/Task';
+import { useLanguage } from '../contexts/LanguageContext';
 import {
   HomeIcon,
   BriefcaseIcon,
-  TargetIcon,
+  FlagIcon,
   HeartIcon,
   BookOpenIcon,
   PaintBrushIcon,
@@ -37,7 +38,7 @@ const WORKSPACE_COLORS = [
 const WORKSPACE_ICON_COMPONENTS = {
   'home': HomeIcon,
   'briefcase': BriefcaseIcon,
-  'target': TargetIcon,
+  'target': FlagIcon,
   'heart': HeartIcon,
   'book': BookOpenIcon,
   'paint': PaintBrushIcon,
@@ -66,6 +67,7 @@ function WorkspaceManager({
   onUpdateWorkspace,
   onDeleteWorkspace 
 }: WorkspaceManagerProps) {
+  const { t } = useLanguage();
   const [showForm, setShowForm] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState<Workspace | null>(null);
   const [formData, setFormData] = useState({
@@ -161,7 +163,7 @@ function WorkspaceManager({
           className="w-full flex items-center justify-center space-x-2 p-3 border-2 border-dashed border-gray-600 rounded-lg text-gray-400 hover:text-gray-300 hover:border-gray-500 transition-colors"
         >
           <Plus className="w-5 h-5" />
-          <span>Add Workspace</span>
+          <span>{t('addWorkspace')}</span>
         </button>
       )}
 
@@ -171,21 +173,21 @@ function WorkspaceManager({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Workspace Name
+                {t('workspaceName')}
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="e.g., Gym, Work, Study"
+                placeholder={t('workspaceExample')}
                 required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Icon
+                {t('icon')}
               </label>
               <div className="grid grid-cols-8 gap-2">
                 {WORKSPACE_ICONS.map(icon => {
@@ -210,7 +212,7 @@ function WorkspaceManager({
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Color
+                {t('color')}
               </label>
               <div className="grid grid-cols-8 gap-2">
                 {WORKSPACE_COLORS.map(color => (
@@ -235,13 +237,13 @@ function WorkspaceManager({
                 onClick={handleCancel}
                 className="px-4 py-2 text-gray-400 hover:text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 type="submit"
                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
-                {editingWorkspace ? 'Update' : 'Create'} Workspace
+                {editingWorkspace ? t('updateWorkspace') : t('createWorkspace')}
               </button>
             </div>
           </form>

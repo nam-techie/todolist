@@ -149,14 +149,14 @@ const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
               <button
                 onClick={pauseTracking}
                 className="p-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
-                title="Pause"
+                title={t('pause')}
               >
                 <PauseIcon className="w-4 h-4" />
               </button>
               <button
                 onClick={stopTracking}
                 className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                title="Stop"
+                title={t('stop')}
               >
                 <StopIcon className="w-4 h-4" />
               </button>
@@ -168,7 +168,7 @@ const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
               type="text"
               value={sessionNote}
               onChange={(e) => setSessionNote(e.target.value)}
-              placeholder="Add session note..."
+              placeholder={t('addSessionNote')}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>

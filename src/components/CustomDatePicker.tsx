@@ -5,6 +5,7 @@ import {
   ChevronRightIcon, 
   ClockIcon 
 } from '@heroicons/react/24/outline';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface CustomDatePickerProps {
   value: string;
@@ -23,9 +24,10 @@ const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   value,
   onChange,
-  placeholder = "Select date and time",
+  placeholder,
   className = ""
 }) => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(
@@ -136,7 +138,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
         className={`w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-left flex items-center justify-between ${className}`}
       >
         <span className={value ? 'text-white' : 'text-gray-400'}>
-          {formatDisplayValue() || placeholder}
+          {formatDisplayValue() || placeholder || t('selectDateTime')}
         </span>
         <CalendarIcon className="w-5 h-5 text-gray-400" />
       </button>
@@ -201,7 +203,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
           <div className="border-t border-gray-700 pt-4">
             <label className="flex items-center text-sm font-medium text-gray-300 mb-2">
               <ClockIcon className="w-4 h-4 mr-2" />
-              Time
+              {t('time')}
             </label>
             <input
               type="time"
@@ -219,14 +221,14 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                 onClick={clearDate}
                 className="px-3 py-2 text-sm text-gray-400 hover:text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
               >
-                Clear
+                {t('clear')}
               </button>
               <button
                 type="button"
                 onClick={setToday}
                 className="px-3 py-2 text-sm text-blue-400 hover:text-blue-300 hover:bg-gray-800 rounded-lg transition-colors"
               >
-                Today
+                {t('today')}
               </button>
             </div>
             <button
@@ -234,7 +236,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
               onClick={() => setIsOpen(false)}
               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
             >
-              Done
+              {t('done')}
             </button>
           </div>
         </div>

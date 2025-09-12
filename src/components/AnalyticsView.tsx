@@ -60,7 +60,7 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
     data.completionRate = data.total > 0 ? (data.completed / data.total) * 100 : 0;
 
     // Weekly completion data (last 7 days)
-    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weekDays = [t('sun'), t('mon'), t('tue'), t('wed'), t('thu'), t('fri'), t('sat')];
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
@@ -148,28 +148,28 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
           icon={ClipboardDocumentListIcon}
           title={t('totalTasks')}
           value={analytics.total}
-          subtitle="All time"
+          subtitle={t('allTime')}
           color="blue"
         />
         <StatCard
           icon={CheckCircleIcon}
           title={t('completed')}
           value={analytics.completed}
-          subtitle={`${analytics.completionRate.toFixed(1)}% completion rate`}
+          subtitle={`${analytics.completionRate.toFixed(1)}% ${t('completionRate')}`}
           color="green"
         />
         <StatCard
           icon={ClockIcon}
-          title="Pending"
+          title={t('pending')}
           value={analytics.pending}
-          subtitle="Tasks remaining"
+          subtitle={t('tasksRemaining')}
           color="yellow"
         />
         <StatCard
           icon={ExclamationTriangleIcon}
-          title="Overdue"
+          title={t('overdue')}
           value={analytics.overdue}
-          subtitle="Past due date"
+          subtitle={t('pastDueDate')}
           color="red"
         />
       </div>
@@ -179,23 +179,23 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
           <div className="flex items-center space-x-3 mb-6">
             <ChartBarIcon className="w-6 h-6 text-green-400" />
-            <h3 className="text-lg font-semibold text-white">Priority Distribution</h3>
+            <h3 className="text-lg font-semibold text-white">{t('priorityDistribution')}</h3>
           </div>
           <div className="space-y-4">
             <ProgressBar
-              label="High"
+              label={t('high')}
               value={analytics.priorityDistribution.high}
               max={analytics.total}
               color="red"
             />
             <ProgressBar
-              label="Medium"
+              label={t('medium')}
               value={analytics.priorityDistribution.medium}
               max={analytics.total}
               color="yellow"
             />
             <ProgressBar
-              label="Low"
+              label={t('low')}
               value={analytics.priorityDistribution.low}
               max={analytics.total}
               color="blue"
@@ -207,7 +207,7 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
         <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
           <div className="flex items-center space-x-3 mb-6">
             <CheckIcon className="w-6 h-6 text-green-400" />
-            <h3 className="text-lg font-semibold text-white">Status Overview</h3>
+            <h3 className="text-lg font-semibold text-white">{t('statusOverview')}</h3>
           </div>
           <div className="space-y-4">
             <ProgressBar
@@ -217,13 +217,13 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
               color="green"
             />
             <ProgressBar
-              label="In Progress"
+              label={t('inProgress')}
               value={analytics.statusDistribution['in-progress']}
               max={analytics.total}
               color="blue"
             />
             <ProgressBar
-              label="Pending"
+              label={t('pending')}
               value={analytics.statusDistribution.pending}
               max={analytics.total}
               color="yellow"
@@ -236,7 +236,7 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
       <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <CalendarIcon className="w-6 h-6 text-green-400" />
-          <h3 className="text-lg font-semibold text-white">Weekly Completion</h3>
+          <h3 className="text-lg font-semibold text-white">{t('weeklyCompletion')}</h3>
         </div>
         <div className="flex items-end justify-between space-x-2 h-48">
           {analytics.weeklyCompletion.map((day, index) => (
@@ -269,9 +269,9 @@ function AnalyticsView({ tasks }: AnalyticsViewProps) {
       <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white mb-2">Overall Progress</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">{t('overallProgress')}</h3>
             <p className="text-gray-400">
-              {analytics.completed} of {analytics.total} tasks completed
+              {analytics.completed} of {analytics.total} {t('completedTasks').toLowerCase()}
             </p>
           </div>
           <div className="relative w-24 h-24">

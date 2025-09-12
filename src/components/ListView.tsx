@@ -261,21 +261,21 @@ function ListView({ tasks, onToggleTask, onEditTask, onDeleteTask, onUpdateTask,
                       <button
                         onClick={() => onEditTask(task)}
                         className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                        title="Edit"
+                        title={t('edit')}
                       >
                         <PencilIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setExpandedTask(expandedTask === task.id ? null : task.id)}
                         className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-700 rounded-lg transition-colors"
-                        title="Time Tracking"
+                        title={t('timeTracking')}
                       >
                         <PlayIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => onDeleteTask(task.id)}
                         className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-700 rounded-lg transition-colors"
-                        title="Delete"
+                        title={t('delete')}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </button>

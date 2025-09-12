@@ -66,7 +66,7 @@ const ProductivityChart: React.FC<ProductivityChartProps> = ({ tasks }) => {
       }, 0);
 
       return {
-        week: `Week ${4 - i}`,
+        week: `${t('week')} ${4 - i}`,
         tasks: weekTasks.length,
         completed: completedInWeek,
         efficiency: weekTasks.length > 0 ? (completedInWeek / weekTasks.length) * 100 : 0,
@@ -89,7 +89,7 @@ const ProductivityChart: React.FC<ProductivityChartProps> = ({ tasks }) => {
       <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <ChartBarIcon className="w-6 h-6 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">Daily Activity (Last 30 Days)</h3>
+          <h3 className="text-lg font-semibold text-white">{t('dailyActivity')}</h3>
         </div>
         
         <div className="flex items-end justify-between space-x-1 h-32 mb-4">
@@ -133,7 +133,7 @@ const ProductivityChart: React.FC<ProductivityChartProps> = ({ tasks }) => {
       <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <ArrowTrendingUpIcon className="w-6 h-6 text-green-400" />
-          <h3 className="text-lg font-semibold text-white">Weekly Efficiency</h3>
+          <h3 className="text-lg font-semibold text-white">{t('weeklyEfficiency')}</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -172,7 +172,7 @@ const ProductivityChart: React.FC<ProductivityChartProps> = ({ tasks }) => {
       <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <ClockIcon className="w-6 h-6 text-yellow-400" />
-          <h3 className="text-lg font-semibold text-white">Time Analysis</h3>
+          <h3 className="text-lg font-semibold text-white">{t('timeAnalysis')}</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -181,7 +181,7 @@ const ProductivityChart: React.FC<ProductivityChartProps> = ({ tasks }) => {
             <div className="text-2xl font-bold text-yellow-400 mb-2">
               {formatTime(tasks.reduce((total, task) => total + (task.timeTracking?.totalMinutes || 0), 0))}
             </div>
-            <div className="text-sm text-gray-400">Total Time Tracked</div>
+            <div className="text-sm text-gray-400">{t('totalTimeTracked')}</div>
           </div>
 
           {/* Average Session */}
@@ -195,7 +195,7 @@ const ProductivityChart: React.FC<ProductivityChartProps> = ({ tasks }) => {
                 return formatTime(Math.round(avgSession));
               })()}
             </div>
-            <div className="text-sm text-gray-400">Average Session</div>
+            <div className="text-sm text-gray-400">{t('averageSession')}</div>
           </div>
 
           {/* Estimated vs Actual */}
@@ -208,7 +208,7 @@ const ProductivityChart: React.FC<ProductivityChartProps> = ({ tasks }) => {
                 return `${accuracy}%`;
               })()}
             </div>
-            <div className="text-sm text-gray-400">Estimation Accuracy</div>
+            <div className="text-sm text-gray-400">{t('estimationAccuracy')}</div>
           </div>
         </div>
       </div>
