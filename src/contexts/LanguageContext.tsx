@@ -125,7 +125,7 @@ const translations = {
     // DatePicker
     selectDateTime: 'Select date and time',
     time: 'Time',
-    done: 'Done',
+    datepickerDone: 'Done',
     
     // Workspace Manager
     workspaceManager: 'Workspace Manager',
@@ -305,7 +305,7 @@ const translations = {
     // DatePicker
     selectDateTime: 'Chọn ngày và giờ',
     time: 'Thời Gian',
-    done: 'Xong',
+    datepickerDone: 'Xong',
     
     // Workspace Manager
     workspaceManager: 'Quản Lý Không Gian',
