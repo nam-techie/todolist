@@ -122,7 +122,7 @@ function CalendarView({ tasks, onToggleTask }: CalendarViewProps) {
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-1 lg:gap-2 flex-1 min-h-0 overflow-auto custom-scrollbar">
+        <div className="grid grid-cols-7 grid-rows-6 gap-1 lg:gap-2 flex-1 min-h-0 h-full custom-scrollbar">
           {calendarDays.map((date, index) => {
             const dateKey = date.toDateString();
             const dayTasks = tasksMap.get(dateKey) || [];
@@ -133,7 +133,7 @@ function CalendarView({ tasks, onToggleTask }: CalendarViewProps) {
               <button
                 key={index}
                 onClick={() => setSelectedDate(date)}
-                className={`p-2 lg:p-3 min-h-[60px] lg:min-h-[80px] text-left border rounded-lg lg:rounded-xl transition-all duration-200 hover:bg-gray-700/50 ${
+                className={`p-2 lg:p-3 h-full text-left border rounded-lg lg:rounded-xl transition-all duration-200 hover:bg-gray-700/50 flex flex-col ${
                   isSelected(date)
                     ? 'bg-green-500/10 border-green-500/30 shadow-green-500/20 shadow-lg'
                     : isToday(date)
@@ -157,7 +157,7 @@ function CalendarView({ tasks, onToggleTask }: CalendarViewProps) {
                     </div>
                   )}
                 </div>
-                <div className="space-y-1 overflow-hidden">
+                <div className="space-y-1 overflow-hidden flex-1">
                   {/* Show 1 task on mobile, 2 on desktop, but only 1 if there are trees */}
                   <div className="lg:hidden">
                     {dayTasks.slice(0, dayTrees.length > 0 ? 1 : 1).map(task => (

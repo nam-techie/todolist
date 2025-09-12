@@ -146,14 +146,14 @@ function App() {
   }, [filteredTasks, notifySuccess, notifyWarning, notifyError, notifyInfo]);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className={`${currentView === 'calendar' ? 'h-screen' : 'min-h-screen'} bg-gray-950 text-white flex flex-col ${currentView === 'calendar' ? 'overflow-hidden' : ''}`}>
       <Header
         setShowFocusTimer={setShowFocusTimer}
         setShowTaskForm={setShowTaskForm}
         onToggleSidebar={() => setShowMobileSidebar(!showMobileSidebar)}
       />
 
-      <div className="flex">
+      <div className={`flex flex-1 ${currentView === 'calendar' ? 'min-h-0' : ''}`}>
         <Sidebar
           showMobileSidebar={showMobileSidebar}
           setShowMobileSidebar={setShowMobileSidebar}

@@ -16,7 +16,7 @@ interface TimeTrackerProps {
 
 const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
   const { t } = useLanguage();
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0); // in seconds
   const [sessionNote, setSessionNote] = useState('');
   
   const timeTracking = task.timeTracking || {
@@ -30,7 +30,7 @@ const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
     
     if (timeTracking.isActive && timeTracking.activeSessionStart) {
       interval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - new Date(timeTracking.activeSessionStart!).getTime()) / 1000 / 60);
+        const elapsed = Math.floor((Date.now() - new Date(timeTracking.activeSessionStart!).getTime()) / 1000);
         setCurrentTime(elapsed);
       }, 1000);
     }
@@ -41,6 +41,7 @@ const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
   }, [timeTracking.isActive, timeTracking.activeSessionStart]);
 
   const startTracking = () => {
+    setCurrentTime(0);
     const updatedTracking = {
       ...timeTracking,
       isActive: true,
@@ -51,13 +52,13 @@ const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
       timeTracking: updatedTracking,
       status: 'in-progress' as const
     });
-    setCurrentTime(0);
   };
 
   const pauseTracking = () => {
     if (!timeTracking.activeSessionStart) return;
     
-    const sessionMinutes = Math.floor((Date.now() - new Date(timeTracking.activeSessionStart).getTime()) / 1000 / 60);
+    const sessionSeconds = Math.floor((Date.now() - new Date(timeTracking.activeSessionStart).getTime()) / 1000);
+    const sessionMinutes = Math.floor(sessionSeconds / 60);
     
     const newSession: TimeSession = {
       id: Date.now().toString(),
@@ -90,6 +91,18 @@ const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
+  const formatDetailedTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    } else {
+      return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+  };
+
   const formatDuration = (start: Date, end?: Date) => {
     const endTime = end || new Date();
     const minutes = Math.floor((endTime.getTime() - start.getTime()) / 1000 / 60);
@@ -115,12 +128,21 @@ const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
 
       {/* Current Session */}
       {timeTracking.isActive && (
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-4">
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-4">
           <div className="flex items-center justify-between">
-            <div>
-              <div className="text-blue-400 font-medium">Active Session</div>
-              <div className="text-2xl font-bold text-white">
-                {formatTime(currentTime)}
+            <div className="flex-1">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="text-blue-400 font-medium">Active Session</div>
+                <div className="flex items-center space-x-1">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-red-400 font-medium">LIVE</span>
+                </div>
+              </div>
+              <div className="text-4xl font-bold text-white font-mono tracking-wider">
+                {formatDetailedTime(currentTime)}
+              </div>
+              <div className="text-sm text-gray-400 mt-1">
+                {currentTime >= 3600 ? 'Hours:Minutes:Seconds' : 'Minutes:Seconds'}
               </div>
             </div>
             <div className="flex space-x-2">
@@ -157,10 +179,17 @@ const TimeTracker: React.FC<TimeTrackerProps> = ({ task, onUpdateTask }) => {
       {!timeTracking.isActive && (
         <button
           onClick={startTracking}
-          className="w-full flex items-center justify-center space-x-2 p-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors mb-4"
+          className="w-full flex items-center justify-center space-x-2 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors mb-4 group"
         >
-          <PlayIcon className="w-4 h-4" />
-          <span>Start Tracking</span>
+          <PlayIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          <div className="text-center">
+            <div className="font-medium">Start Tracking</div>
+            {timeTracking.totalMinutes > 0 && (
+              <div className="text-xs text-green-200">
+                Total: {formatTime(timeTracking.totalMinutes)}
+              </div>
+            )}
+          </div>
         </button>
       )}
 

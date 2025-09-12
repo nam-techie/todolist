@@ -57,8 +57,8 @@ const MainContent: React.FC<MainContentProps> = ({
   };
 
   return (
-    <main className="flex-1 p-6">
-      <div className="mb-6">
+    <main className={`flex-1 p-6 ${currentView === 'calendar' ? 'flex flex-col min-h-0' : ''}`}>
+      <div className={`mb-6 ${currentView === 'calendar' ? 'flex-shrink-0' : ''}`}>
         <h2 className="text-2xl font-bold mb-2 text-white">
           {currentWorkspaceData?.name || t('defaultWorkspace')}
         </h2>
@@ -69,7 +69,13 @@ const MainContent: React.FC<MainContentProps> = ({
         </p>
       </div>
       
-      {renderCurrentView()}
+      {currentView === 'calendar' ? (
+        <div className="flex-1 min-h-0">
+          {renderCurrentView()}
+        </div>
+      ) : (
+        renderCurrentView()
+      )}
     </main>
   );
 };
