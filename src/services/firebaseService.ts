@@ -53,14 +53,21 @@ export class FirebaseService {
   // Get all tasks for a user
   async getTasks(userId: string): Promise<Task[]> {
     try {
+      // Simple query without orderBy to avoid index requirement
       const q = query(
         collection(db, this.collectionName),
-        where('userId', '==', userId),
-        orderBy('createdAt', 'desc')
+        where('userId', '==', userId)
       );
       
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => this.convertFirestoreTask(doc));
+      const tasks = querySnapshot.docs.map(doc => this.convertFirestoreTask(doc));
+      
+      // Sort in JavaScript instead of Firestore
+      return tasks.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA; // Newest first
+      });
     } catch (error) {
       console.error('Error getting tasks:', error);
       throw error;
@@ -69,16 +76,49 @@ export class FirebaseService {
 
   // Subscribe to real-time updates
   subscribeToTasks(userId: string, callback: (tasks: Task[]) => void): () => void {
+    
+    // Simple query without orderBy to avoid index requirement
     const q = query(
       collection(db, this.collectionName),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', userId)
     );
 
-    return onSnapshot(q, (querySnapshot) => {
-      const tasks = querySnapshot.docs.map(doc => this.convertFirestoreTask(doc));
-      callback(tasks);
-    });
+    return onSnapshot(q, 
+      (querySnapshot) => {
+        try {
+          const tasks = querySnapshot.docs.map(doc => this.convertFirestoreTask(doc));
+          // Sort in JavaScript instead of Firestore
+          const sortedTasks = tasks.sort((a, b) => {
+            try {
+              const dateA = new Date(a.createdAt).getTime();
+              const dateB = new Date(b.createdAt).getTime();
+              return dateB - dateA; // Newest first
+            } catch (sortError) {
+              console.warn('Sort error, using string comparison:', sortError);
+              return b.createdAt.localeCompare(a.createdAt);
+            }
+          });
+          callback(sortedTasks);
+        } catch (error) {
+          console.error('Error processing tasks:', error);
+          callback([]); // Return empty array as fallback
+        }
+      },
+      (error) => {
+        console.error('💥 Subscription error:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        
+        // If it's an index error, provide helpful message but continue
+        if (error.code === 'failed-precondition') {
+          console.warn('⚠️ Firestore index missing, but app will continue working');
+          console.warn('Tasks will be sorted client-side');
+        }
+        
+        // Return empty callback to prevent crashes
+        callback([]);
+      }
+    );
   }
 
   // Add a new task
@@ -96,9 +136,10 @@ export class FirebaseService {
         this.convertToFirestoreTask(taskWithUser)
       );
       
+      console.log('✅ Task created successfully:', docRef.id);
       return docRef.id;
     } catch (error) {
-      console.error('Error adding task:', error);
+      console.error('❌ Error adding task:', error);
       throw error;
     }
   }

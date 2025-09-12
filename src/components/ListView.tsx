@@ -78,8 +78,8 @@ function ListView({ tasks, onToggleTask, onEditTask, onDeleteTask, onUpdateTask,
           bValue = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
           break;
         case 'createdAt':
-          aValue = a.createdAt.getTime();
-          bValue = b.createdAt.getTime();
+          aValue = new Date(a.createdAt).getTime();
+          bValue = new Date(b.createdAt).getTime();
           break;
         default:
           return 0;
