@@ -21,18 +21,36 @@ export class FirebaseService {
   // Convert Firestore timestamp to ISO string
   private convertFirestoreTask(doc: any): Task {
     const data = doc.data();
-    return {
+    
+    const task = {
       ...data,
       id: doc.id,
       createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
       updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
       dueDate: data.dueDate?.toDate?.()?.toISOString() || data.dueDate,
-    } as Task;
+    };
+    
+    // Handle timeTracking activeSessionStart conversion
+    if (data.timeTracking?.activeSessionStart) {
+      task.timeTracking = {
+        ...data.timeTracking,
+        activeSessionStart: data.timeTracking.activeSessionStart.toDate?.() || new Date(data.timeTracking.activeSessionStart)
+      };
+    }
+    
+    return task as Task;
   }
 
   // Convert Task to Firestore format
   private convertToFirestoreTask(task: Partial<Task>) {
     const firestoreTask: any = { ...task };
+    
+    // Remove undefined values that Firebase doesn't like
+    Object.keys(firestoreTask).forEach(key => {
+      if (firestoreTask[key] === undefined) {
+        delete firestoreTask[key];
+      }
+    });
     
     if (task.createdAt) {
       firestoreTask.createdAt = Timestamp.fromDate(new Date(task.createdAt));
@@ -42,6 +60,25 @@ export class FirebaseService {
     }
     if (task.dueDate) {
       firestoreTask.dueDate = Timestamp.fromDate(new Date(task.dueDate));
+    }
+    
+    // Handle timeTracking
+    if (task.timeTracking) {
+      const timeTracking = { ...task.timeTracking };
+      
+      // Remove undefined values from timeTracking
+      Object.keys(timeTracking).forEach(key => {
+        if (timeTracking[key] === undefined) {
+          delete timeTracking[key];
+        }
+      });
+      
+      // Convert activeSessionStart if it exists
+      if (timeTracking.activeSessionStart) {
+        timeTracking.activeSessionStart = Timestamp.fromDate(new Date(timeTracking.activeSessionStart));
+      }
+      
+      firestoreTask.timeTracking = timeTracking;
     }
     
     // Remove id from the data to be stored

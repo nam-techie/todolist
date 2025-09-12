@@ -23,7 +23,7 @@ export interface TimeTracking {
   sessions: TimeSession[];
   totalMinutes: number;
   isActive: boolean;
-  activeSessionStart?: Date;
+  activeSessionStart?: Date | string | any; // Support multiple formats for Firebase compatibility
 }
 
 export interface TimeSession {

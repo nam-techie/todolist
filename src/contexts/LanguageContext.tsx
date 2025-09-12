@@ -161,6 +161,15 @@ const translations = {
     },
     
     // Time Tracker
+    timeTracking: 'Time Tracking',
+    activeSession: 'Active Session',
+    live: 'LIVE',
+    hoursMinutesSeconds: 'Hours:Minutes:Seconds',
+    minutesSeconds: 'Minutes:Seconds',
+    startTracking: 'Start Tracking',
+    previousSessions: 'Previous Sessions',
+    total: 'Total',
+    estimated: 'estimated',
     pause: 'Pause',
     stop: 'Stop',
     addSessionNote: 'Add session note...',
@@ -168,7 +177,6 @@ const translations = {
     // Tooltips
     edit: 'Edit',
     delete: 'Delete',
-    timeTracking: 'Time Tracking',
     
     // Analytics
     allTime: 'All time',
@@ -341,6 +349,15 @@ const translations = {
     },
     
     // Time Tracker
+    timeTracking: 'Theo Dõi Thời Gian',
+    activeSession: 'Phiên Hoạt Động',
+    live: 'TRỰC TIẾP',
+    hoursMinutesSeconds: 'Giờ:Phút:Giây',
+    minutesSeconds: 'Phút:Giây',
+    startTracking: 'Bắt Đầu Theo Dõi',
+    previousSessions: 'Phiên Trước',
+    total: 'Tổng',
+    estimated: 'ước tính',
     pause: 'Tạm dừng',
     stop: 'Dừng',
     addSessionNote: 'Thêm ghi chú phiên...',
@@ -348,7 +365,6 @@ const translations = {
     // Tooltips
     edit: 'Sửa',
     delete: 'Xóa',
-    timeTracking: 'Theo Dõi Thời Gian',
     
     // Analytics
     allTime: 'Tất cả thời gian',

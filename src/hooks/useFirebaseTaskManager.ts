@@ -91,12 +91,17 @@ export const useFirebaseTaskManager = () => {
     }
   };
 
-  const handleUpdateTask = async (taskId: string, taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (!user) throw new Error('User not authenticated');
+  const handleUpdateTask = async (taskId: string, updates: Partial<Task>) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task || !user) return;
 
     try {
       setSyncing(true);
-      await firebaseService.updateTask(taskId, taskData, user.uid);
+      
+      // Clean up updates to remove undefined values that Firebase doesn't like
+      const cleanUpdates = JSON.parse(JSON.stringify(updates));
+      
+      await firebaseService.updateTask(taskId, cleanUpdates, user.uid);
       // Task will be updated via real-time subscription
     } catch (error) {
       console.error('Error updating task:', error);
