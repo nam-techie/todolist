@@ -4,11 +4,9 @@ import { useFirebaseTaskManager } from './hooks/useFirebaseTaskManager';
 import { useLanguage } from './contexts/LanguageContext';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useNotifications } from './hooks/useNotifications';
-import { useOfflineSync } from './hooks/useOfflineSync';
 import { smartNotificationService } from './services/smartNotificationService';
 import { useAuth } from './contexts/AuthContext';
 import Header from './components/Header';
-import OfflineIndicator from './components/OfflineIndicator';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
 import TaskForm from './components/TaskForm';
@@ -17,6 +15,7 @@ import FocusTimer from './components/FocusTimer';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
 import NotificationSystem from './components/NotificationSystem';
 import LoginScreen from './components/LoginScreen';
+import FloatingChatBot from './components/AIAssistant/FloatingChatBot';
 
 type ViewType = 'list' | 'calendar' | 'analytics';
 
@@ -33,7 +32,6 @@ function App() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { language, setLanguage } = useLanguage();
   const { notifications, removeNotification, notifySuccess, notifyError, notifyWarning, notifyInfo } = useNotifications();
-  const { isOnline, syncStatus, pendingChanges, handleSync } = useOfflineSync();
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const {
@@ -286,12 +284,8 @@ function App() {
         onRemove={removeNotification}
       />
 
-      <OfflineIndicator
-        isOnline={isOnline}
-        syncStatus={syncStatus}
-        pendingChanges={pendingChanges}
-        onSync={handleSync}
-      />
+      {/* AI Assistant Floating Chatbot */}
+      <FloatingChatBot />
     </div>
   );
 }

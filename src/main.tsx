@@ -6,6 +6,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UIProvider } from './contexts/UIContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { AIAssistantProvider } from './contexts/AIAssistantContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Register Service Worker
@@ -28,7 +29,9 @@ createRoot(document.getElementById('root')!).render(
         <ThemeProvider>
           <LanguageProvider>
             <UIProvider>
-              <App />
+              <AIAssistantProvider>
+                <App />
+              </AIAssistantProvider>
             </UIProvider>
           </LanguageProvider>
         </ThemeProvider>

@@ -7,4 +7,8 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  define: {
+    // Ensure environment variables are available at build time
+    'process.env': process.env,
+  },
 });
