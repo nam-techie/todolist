@@ -1,20 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAIAssistant } from '../../contexts/AIAssistantContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Task } from '../../types/Task';
 import { 
   PaperAirplaneIcon,
   CameraIcon,
   TrashIcon,
   ExclamationTriangleIcon,
-  SparklesIcon,
-  ClockIcon,
-  UserIcon
+  SparklesIcon
 } from '@heroicons/react/24/outline';
 import ChatMessage from './ChatMessage';
 import TypingIndicator from './TypingIndicator';
 
 interface ChatInterfaceProps {
-  tasks?: any[];
+  tasks?: Task[];
   currentView?: string;
 }
 
@@ -29,7 +27,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ tasks = [], currentView }
     analyzeScreenshot
   } = useAIAssistant();
   
-  const { t } = useLanguage();
   const [inputValue, setInputValue] = useState('');
   const [isScreenshotting, setIsScreenshotting] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -71,7 +68,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ tasks = [], currentView }
     try {
       // Request screen capture
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { mediaSource: 'screen' }
+        video: true
       });
 
       // Create video element to capture frame
@@ -107,24 +104,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ tasks = [], currentView }
     }
   };
 
-  // Quick action buttons
-  const quickActions = [
-    {
-      label: 'Lịch học hôm nay',
-      message: 'Tôi có lịch học gì hôm nay? Hãy phân tích các task và đề xuất thời gian học phù hợp.',
-      icon: ClockIcon
-    },
-    {
-      label: 'Ưu tiên công việc',
-      message: 'Hãy giúp tôi sắp xếp ưu tiên các công việc dựa trên deadline và mức độ quan trọng.',
-      icon: SparklesIcon
-    },
-    {
-      label: 'Kế hoạch tuần',
-      message: 'Dựa vào các task hiện tại, hãy đề xuất kế hoạch học tập cho tuần này.',
-      icon: ClockIcon
-    }
-  ];
 
   return (
     <div className="flex flex-col h-full bg-gray-900">
@@ -214,6 +193,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ tasks = [], currentView }
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
+              placeholder="Hỏi về lịch học, ưu tiên công việc, kế hoạch học tập..."
               className="
                 w-full px-3 py-2 pr-10
                 bg-gray-800 border border-gray-600 rounded-lg
